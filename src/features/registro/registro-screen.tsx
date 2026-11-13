@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
-import { Stamp, StampNumber } from '@/components/ui/stamp';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -45,8 +44,8 @@ const PASOS: {
   },
   {
     id: 'logo',
-    lineas: ['Ponele', 'cara a'],
-    acento: 'tu marca.',
+    lineas: ['Mostranos'],
+    acento: 'tu logo.',
     bajada: 'Subí tu logo. Si no lo tenés a mano, seguí y lo cargás después.',
     Componente: PasoLogo,
   },
@@ -59,8 +58,8 @@ const PASOS: {
   },
   {
     id: 'direccion',
-    lineas: ['¿Dónde'],
-    acento: 'te encuentran?',
+    lineas: ['¿Dónde te'],
+    acento: 'encuentran?',
     bajada: 'La dirección de tu depósito o local.',
     Componente: PasoDireccion,
   },
@@ -68,7 +67,7 @@ const PASOS: {
     id: 'rubros',
     lineas: ['¿Qué'],
     acento: 'vendés?',
-    bajada: 'Elegí tus rubros para que te encuentren más fácil.',
+    bajada: 'Marcá los rubros que vendés.',
     Componente: PasoRubros,
   },
   {
@@ -151,8 +150,9 @@ export function RegistroScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <SafeAreaView edges={['top']} style={styles.column}>
           <BarraSuperior
-            derecha={`PASO ${dosCifras(paso + 1)} / ${dosCifras(total)}`}
+            derecha={`${dosCifras(paso + 1)} / ${dosCifras(total)}`}
             alVolver={paso > 0 ? () => irA(paso - 1) : undefined}
+            progreso={(paso + 1) / total}
           />
 
           <ScrollView
@@ -160,36 +160,36 @@ export function RegistroScreen() {
             style={styles.flex}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: spacing.xl,
-              paddingTop: spacing.xxxl,
-              paddingBottom: spacing.xxl,
-              gap: spacing.xxl,
-            }}>
-            <View style={[styles.sello, { top: spacing.sm, right: spacing.lg }]}>
-              <Stamp>
-                <StampNumber value={paso + 1} />
-              </Stamp>
-            </View>
+            contentContainerStyle={styles.contenido}>
+            <View
+              style={[
+                styles.reparto,
+                {
+                  paddingHorizontal: spacing.xl,
+                  paddingTop: spacing.xxl,
+                  paddingBottom: spacing.xxl,
+                  gap: spacing.xxl,
+                },
+              ]}>
+              <View style={{ gap: spacing.md }}>
+                <Titular lineas={lineas} acento={acento} clave={paso} />
+                <Animated.View key={`bajada-${paso}`} entering={FadeIn.delay(220).duration(400)}>
+                  <AppText variant="subhead" color="textSecondary">
+                    {bajada}
+                  </AppText>
+                </Animated.View>
+              </View>
 
-            <View style={{ gap: spacing.md }}>
-              <Titular lineas={lineas} acento={acento} clave={paso} />
-              <Animated.View key={`bajada-${paso}`} entering={FadeIn.delay(220).duration(400)}>
-                <AppText variant="subhead" color="textSecondary">
-                  {bajada}
-                </AppText>
+              <Animated.View key={`campos-${paso}`} entering={FadeIn.delay(280).duration(400)}>
+                <Componente form={form} errores={errores} cambiar={cambiar} alTerminar={continuar} />
               </Animated.View>
             </View>
-
-            <Animated.View key={`campos-${paso}`} entering={FadeIn.delay(280).duration(400)}>
-              <Componente form={form} errores={errores} cambiar={cambiar} alTerminar={continuar} />
-            </Animated.View>
           </ScrollView>
         </SafeAreaView>
 
         <View style={styles.barraInferior}>
           <ActionBar
-            label={esUltimo ? 'Enviar registro' : 'Continuar'}
+            label={esUltimo ? 'Enviar registro' : 'Siguiente'}
             loading={enviando}
             progress={(paso + 1) / total}
             onPress={continuar}
@@ -205,5 +205,6 @@ const styles = StyleSheet.create({
   /** En pantallas anchas (tablet, web) el contenido no se estira de más. */
   column: { flex: 1, width: '100%', maxWidth: 520, alignSelf: 'center' },
   barraInferior: { width: '100%', maxWidth: 520, alignSelf: 'center' },
-  sello: { position: 'absolute' },
+  contenido: { flexGrow: 1 },
+  reparto: {},
 });

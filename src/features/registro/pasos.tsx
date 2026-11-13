@@ -8,7 +8,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { Chip } from '@/components/ui/chip';
 import { Icon } from '@/components/ui/icon';
-import { PillField } from '@/components/ui/pill-field';
+import { LineField } from '@/components/ui/line-field';
 import { RUBROS } from '@/data/rubros';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
@@ -28,9 +28,10 @@ export type PasoProps = {
 
 export function PasoNombre({ form, errores, cambiar, alTerminar }: PasoProps) {
   return (
-    <PillField
+    <LineField
       label="Razón social"
-      placeholder="Ej.: Distribuidora del Sur"
+      autoFocus
+      placeholder="Distribuidora del Sur"
       value={form.razonSocial}
       onChangeText={(razonSocial) => cambiar({ razonSocial })}
       error={errores.razonSocial}
@@ -102,10 +103,11 @@ export function PasoContacto({ form, errores, cambiar, alTerminar }: PasoProps) 
   const telefonoRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   return (
-    <View style={{ gap: spacing.lg }}>
-      <PillField
+    <View style={{ gap: spacing.xl }}>
+      <LineField
         label="WhatsApp"
-        placeholder="WhatsApp · 11 5555 0000"
+        autoFocus
+        placeholder="11 5555 0000"
         value={form.whatsapp}
         onChangeText={(texto) => cambiar({ whatsapp: limpiarTelefono(texto) })}
         error={errores.whatsapp}
@@ -115,10 +117,10 @@ export function PasoContacto({ form, errores, cambiar, alTerminar }: PasoProps) 
         returnKeyType="next"
         onSubmitEditing={() => telefonoRef.current?.focus()}
       />
-      <PillField
+      <LineField
         inputRef={telefonoRef}
-        label="Teléfono fijo (opcional)"
-        placeholder="Teléfono fijo (opcional)"
+        label="Teléfono fijo · opcional"
+        placeholder="0291 455 0000"
         value={form.telefono}
         onChangeText={(texto) => cambiar({ telefono: limpiarTelefono(texto) })}
         error={errores.telefono}
@@ -134,8 +136,9 @@ export function PasoContacto({ form, errores, cambiar, alTerminar }: PasoProps) 
 
 export function PasoDireccion({ form, errores, cambiar, alTerminar }: PasoProps) {
   return (
-    <PillField
+    <LineField
       label="Dirección"
+      autoFocus
       placeholder="Calle, número y localidad"
       value={form.direccion}
       onChangeText={(direccion) => cambiar({ direccion })}
@@ -196,7 +199,7 @@ export function PasoRubros({ form, errores, cambiar }: PasoProps) {
 /* ───────────── Tu lista de precios ───────────── */
 
 export function PasoCatalogo({ form, errores, cambiar }: PasoProps) {
-  const { colors, radius, spacing } = useAppTheme();
+  const { colors, spacing } = useAppTheme();
 
   const elegirPdf = async () => {
     haptics.select();
@@ -218,8 +221,7 @@ export function PasoCatalogo({ form, errores, cambiar }: PasoProps) {
             styles.archivo,
             {
               gap: spacing.md,
-              padding: spacing.lg,
-              borderRadius: radius.xl,
+              paddingVertical: spacing.lg,
               borderColor: errores.catalogo ? colors.danger : colors.text,
             },
           ]}>
@@ -267,7 +269,6 @@ export function PasoCatalogo({ form, errores, cambiar }: PasoProps) {
           {
             gap: spacing.md,
             paddingVertical: spacing.lg,
-            paddingHorizontal: spacing.xl,
             borderColor: colors.text,
             backgroundColor: pressed ? colors.primarySoft : colors.background,
           },
@@ -280,7 +281,7 @@ export function PasoCatalogo({ form, errores, cambiar }: PasoProps) {
           </AppText>
         </View>
       </Pressable>
-      <AppText variant="footnote" color="textSecondary" style={{ paddingHorizontal: spacing.xl }}>
+      <AppText variant="footnote" color="textSecondary">
         Si no lo tenés a mano, seguí y lo subís después desde tu perfil.
       </AppText>
     </View>
@@ -301,12 +302,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   logoImagen: { width: '100%', height: '100%' },
-  archivo: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5 },
+  archivo: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 2, borderBottomWidth: 2 },
   zona: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    borderRadius: 999,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
   },
 });
