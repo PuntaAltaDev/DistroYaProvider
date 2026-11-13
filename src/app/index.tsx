@@ -1,8 +1,13 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppButton } from '@/components/ui/app-button';
 import { AppText } from '@/components/ui/app-text';
+import { BottomSheet } from '@/components/ui/bottom-sheet';
+import { Chip } from '@/components/ui/chip';
+import { StepProgress } from '@/components/ui/step-progress';
+import { TextField } from '@/components/ui/text-field';
 import { BottomTabInset } from '@/constants/theme';
 import { useAppTheme, type AppColors, type ThemeMode, type TypographyVariant } from '@/theme';
 
@@ -40,8 +45,29 @@ const TYPE_SAMPLES: { variant: TypographyVariant; label: string }[] = [
   { variant: 'caption', label: 'Etiqueta' },
 ];
 
+const TAGS = ['Cervezas', 'Vinos', 'Destilados', 'Gaseosas', 'Aguas', 'Sin alcohol'];
+const TOTAL_STEPS = 4;
+
 export default function DesignSystemScreen() {
-  const { colors, spacing, radius, sizes, mode, setMode, motion } = useAppTheme();
+  const { colors, spacing, radius, mode, setMode } = useAppTheme();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string>();
+  const [tags, setTags] = useState<string[]>(['Cervezas']);
+  const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const toggleTag = (tag: string) =>
+    setTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+
+  const validatePhone = () =>
+    setPhoneError(phone.replace(/\D/g, '').length < 8 ? 'Ingresá un número válido.' : undefined);
+
+  const fakeSave = () => {
+    setSaving(true);
+    setTimeout(() => setSaving(false), 1500);
+  };
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
@@ -131,43 +157,78 @@ export default function DesignSystemScreen() {
         {/* Botones */}
         <Section title="Botones">
           <View style={{ gap: spacing.md }}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  height: sizes.buttonHeight,
-                  borderRadius: radius.md,
-                  backgroundColor: pressed ? colors.primaryPressed : colors.primary,
-                  transform: [{ scale: pressed ? motion.pressScale : 1 }],
-                },
-              ]}>
-              <AppText variant="headline" color="onPrimary">
-                Botón principal
-              </AppText>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  height: sizes.buttonHeight,
-                  borderRadius: radius.md,
-                  borderWidth: 1,
-                  borderColor: colors.borderStrong,
-                  backgroundColor: pressed ? colors.surfaceAlt : 'transparent',
-                  transform: [{ scale: pressed ? motion.pressScale : 1 }],
-                },
-              ]}>
-              <AppText variant="headline">Botón secundario</AppText>
-            </Pressable>
+            <AppButton label="Guardar perfil" loading={saving} onPress={fakeSave} />
+            <AppButton label="Botón secundario" variant="secondary" />
+            <AppButton label="Omitir por ahora" variant="ghost" />
           </View>
         </Section>
 
-        {/* Campo */}
+        {/* Campos */}
         <Section title="Campos">
           <View style={{ gap: spacing.md }}>
-            <FieldSample label="Razón social" value="Distribuidora del Sur" />
-            <FieldSample label="WhatsApp" value="+54 9 11 5555 0000" focused />
+            <TextField
+              label="Razón social"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+              returnKeyType="next"
+            />
+            <TextField
+              label="WhatsApp"
+              value={phone}
+              onChangeText={(text) => {
+                setPhone(text);
+                if (phoneError) setPhoneError(undefined);
+              }}
+              onBlur={validatePhone}
+              error={phoneError}
+              helper="Con código de área, sin 0 ni 15."
+              keyboardType="phone-pad"
+            />
           </View>
+        </Section>
+
+        {/* Tags */}
+        <Section title="Rubros">
+          <View style={[styles.grid, { gap: spacing.sm }]}>
+            {TAGS.map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                selected={tags.includes(tag)}
+                onToggle={() => toggleTag(tag)}
+              />
+            ))}
+          </View>
+        </Section>
+
+        {/* Pasos */}
+        <Section title="Avance por pasos">
+          <View style={{ gap: spacing.md }}>
+            <StepProgress current={step} total={TOTAL_STEPS} label="Tu negocio" />
+            <View style={[styles.row, { gap: spacing.md }]}>
+              <View style={styles.flex}>
+                <AppButton
+                  label="Atrás"
+                  variant="secondary"
+                  disabled={step === 1}
+                  onPress={() => setStep((s) => Math.max(1, s - 1))}
+                />
+              </View>
+              <View style={styles.flex}>
+                <AppButton
+                  label="Siguiente"
+                  disabled={step === TOTAL_STEPS}
+                  onPress={() => setStep((s) => Math.min(TOTAL_STEPS, s + 1))}
+                />
+              </View>
+            </View>
+          </View>
+        </Section>
+
+        {/* Panel inferior */}
+        <Section title="Panel inferior">
+          <AppButton label="Abrir panel" variant="secondary" onPress={() => setSheetOpen(true)} />
         </Section>
 
         {/* Redondeos */}
@@ -193,6 +254,20 @@ export default function DesignSystemScreen() {
           </View>
         </Section>
       </ScrollView>
+
+      <BottomSheet visible={sheetOpen} onClose={() => setSheetOpen(false)} title="Elegí tus rubros">
+        <View style={[styles.grid, { gap: spacing.sm }]}>
+          {TAGS.map((tag) => (
+            <Chip
+              key={tag}
+              label={tag}
+              selected={tags.includes(tag)}
+              onToggle={() => toggleTag(tag)}
+            />
+          ))}
+        </View>
+        <AppButton label="Listo" onPress={() => setSheetOpen(false)} />
+      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -209,28 +284,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/** Muestra estática de un campo. El campo animado de verdad viene en el paso 2. */
-function FieldSample({ label, value, focused }: { label: string; value: string; focused?: boolean }) {
-  const { colors, radius, sizes, spacing } = useAppTheme();
-  return (
-    <View
-      style={{
-        height: sizes.inputHeight,
-        borderRadius: radius.md,
-        borderWidth: focused ? 1.5 : 1,
-        borderColor: focused ? colors.primary : colors.border,
-        backgroundColor: colors.background,
-        paddingHorizontal: spacing.lg,
-        justifyContent: 'center',
-      }}>
-      <AppText variant="caption" color={focused ? 'primaryText' : 'textSecondary'}>
-        {label}
-      </AppText>
-      <AppText variant="body">{value}</AppText>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   accentBar: { width: 28, height: 3 },
@@ -241,5 +294,4 @@ const styles = StyleSheet.create({
   swatchItem: { width: 72, gap: 6 },
   swatch: { width: 72, height: 56, borderWidth: StyleSheet.hairlineWidth },
   radiusBox: { width: 56, height: 56, borderWidth: 1 },
-  button: { alignItems: 'center', justifyContent: 'center' },
 });
