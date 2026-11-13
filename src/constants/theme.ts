@@ -7,20 +7,23 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+import { colors } from '@/theme/tokens';
+
+/** Colores de la plantilla de Expo, conectados al sistema de diseño DistroYa. */
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: colors.light.text,
+    background: colors.light.background,
+    backgroundElement: colors.light.surfaceAlt,
+    backgroundSelected: colors.light.primarySoft,
+    textSecondary: colors.light.textSecondary,
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: colors.dark.text,
+    background: colors.dark.background,
+    backgroundElement: colors.dark.surfaceAlt,
+    backgroundSelected: colors.dark.primarySoft,
+    textSecondary: colors.dark.textSecondary,
   },
 } as const;
 
