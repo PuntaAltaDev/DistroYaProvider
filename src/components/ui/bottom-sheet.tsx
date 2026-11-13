@@ -35,9 +35,11 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
   /** 0 = oculto. 1 = abierto. */
   const progress = useSharedValue(0);
 
+  // Al abrir, se monta enseguida (antes de animar).
+  if (visible && !mounted) setMounted(true);
+
   useEffect(() => {
     if (visible) {
-      setMounted(true);
       progress.set(withSpring(1, motion.spring.gentle));
       return;
     }

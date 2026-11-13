@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { useEffect, useRef, useState, type ComponentRef, type RefObject } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 import Animated, {
   FadeInDown,
@@ -14,7 +14,12 @@ import { fonts, useAppTheme } from '@/theme';
 
 import { AppText } from './app-text';
 
+/** Referencia a un campo, para poder darle el foco desde afuera (ej.: saltar al siguiente). */
+export type TextFieldRef = RefObject<ComponentRef<typeof TextInput> | null>;
+
 type TextFieldProps = Omit<TextInputProps, 'placeholder' | 'style'> & {
+  /** Referencia opcional para enfocar este campo desde otro. */
+  inputRef?: TextFieldRef;
   /** Nombre del campo. Flota hacia arriba cuando se escribe. */
   label: string;
   /** Mensaje de error. Si existe, el campo se marca en rojo. */
@@ -35,10 +40,12 @@ export function TextField({
   value,
   onFocus,
   onBlur,
+  inputRef: externalRef,
   ...rest
 }: TextFieldProps) {
   const { colors, radius, sizes, spacing, motion, typography } = useAppTheme();
-  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const localRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const inputRef = externalRef ?? localRef;
   const [focused, setFocused] = useState(false);
 
   const hasText = !!value;

@@ -5,12 +5,11 @@ import {
   Inter_700Bold,
   useFonts,
 } from '@expo-google-fonts/inter';
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 import { AppThemeProvider, useAppTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,11 +21,14 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+  const ready = fontsLoaded || !!fontError;
 
-  // Mientras carga la fuente, queda la pantalla de inicio (splash).
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+  // La pantalla de inicio (splash) se oculta recién cuando la fuente está lista.
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
 
   return (
     <AppThemeProvider initialMode="light">
@@ -54,8 +56,7 @@ function ThemedNavigation() {
         },
       }}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <AnimatedSplashOverlay />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
     </ThemeProvider>
   );
 }
