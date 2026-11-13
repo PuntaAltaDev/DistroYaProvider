@@ -1,65 +1,100 @@
 import { useRef, useState, type ComponentRef } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppButton } from '@/components/ui/app-button';
+import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
-import { Icon } from '@/components/ui/icon';
-import { StepProgress } from '@/components/ui/step-progress';
+import { Stamp, StampNumber } from '@/components/ui/stamp';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
-import { PasoCatalogo, PasoContacto, PasoNegocio, PasoRubros, type PasoProps } from './pasos';
+import { BarraSuperior, Titular } from './editorial';
+import {
+  PasoCatalogo,
+  PasoContacto,
+  PasoDireccion,
+  PasoLogo,
+  PasoNombre,
+  PasoRubros,
+  type PasoProps,
+} from './pasos';
 import { RegistroExito } from './registro-exito';
-import { FORM_INICIAL, validarPaso, type Errores, type RegistroForm } from './validacion';
+import {
+  FORM_INICIAL,
+  validarPaso,
+  type Errores,
+  type PasoId,
+  type RegistroForm,
+} from './validacion';
 
-/** Los 4 pasos del registro, en orden. */
+/** Las pantallas del registro, en orden. Una pregunta por pantalla. */
 const PASOS: {
-  nombre: string;
-  titulo: string;
+  id: PasoId;
+  lineas: string[];
+  acento: string;
   bajada: string;
   Componente: (props: PasoProps) => React.JSX.Element;
 }[] = [
   {
-    nombre: 'Tu negocio',
-    titulo: 'Contanos de tu negocio',
+    id: 'nombre',
+    lineas: ['¿Cómo', 'se llama'],
+    acento: 'tu negocio?',
     bajada: 'Así te van a ver los bares y restaurantes.',
-    Componente: PasoNegocio,
+    Componente: PasoNombre,
   },
   {
-    nombre: 'Contacto',
-    titulo: '¿Cómo te contactan?',
+    id: 'logo',
+    lineas: ['Ponele', 'cara a'],
+    acento: 'tu marca.',
+    bajada: 'Subí tu logo. Si no lo tenés a mano, seguí y lo cargás después.',
+    Componente: PasoLogo,
+  },
+  {
+    id: 'contacto',
+    lineas: ['¿Cómo te'],
+    acento: 'contactan?',
     bajada: 'Los negocios te escriben directo, sin intermediarios.',
     Componente: PasoContacto,
   },
   {
-    nombre: 'Rubros',
-    titulo: '¿Qué vendés?',
+    id: 'direccion',
+    lineas: ['¿Dónde'],
+    acento: 'te encuentran?',
+    bajada: 'La dirección de tu depósito o local.',
+    Componente: PasoDireccion,
+  },
+  {
+    id: 'rubros',
+    lineas: ['¿Qué'],
+    acento: 'vendés?',
     bajada: 'Elegí tus rubros para que te encuentren más fácil.',
     Componente: PasoRubros,
   },
   {
-    nombre: 'Catálogo',
-    titulo: 'Tu lista de precios',
+    id: 'catalogo',
+    lineas: ['Tu lista'],
+    acento: 'de precios.',
     bajada: 'Subí tu catálogo en PDF. Lo podés actualizar cuando quieras.',
     Componente: PasoCatalogo,
   },
 ];
+
+const dosCifras = (n: number) => String(n).padStart(2, '0');
 
 export function RegistroScreen() {
   const { colors, spacing } = useAppTheme();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
 
   const [paso, setPaso] = useState(0);
-  const [haciaAdelante, setHaciaAdelante] = useState(true);
   const [form, setForm] = useState<RegistroForm>(FORM_INICIAL);
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
 
-  const esUltimo = paso === PASOS.length - 1;
-  const { titulo, bajada, nombre, Componente } = PASOS[paso];
+  const total = PASOS.length;
+  const esUltimo = paso === total - 1;
+  const { id, lineas, acento, bajada, Componente } = PASOS[paso];
 
   /** Cambia datos del formulario y borra el error de los campos que se tocaron. */
   const cambiar = (cambios: Partial<RegistroForm>) => {
@@ -72,14 +107,13 @@ export function RegistroScreen() {
   };
 
   const irA = (destino: number) => {
-    setHaciaAdelante(destino > paso);
     setErrores({});
     setPaso(destino);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
   const continuar = () => {
-    const encontrados = validarPaso(paso, form);
+    const encontrados = validarPaso(id, form);
     if (Object.keys(encontrados).length > 0) {
       setErrores(encontrados);
       haptics.error();
@@ -100,47 +134,27 @@ export function RegistroScreen() {
 
   if (enviado) {
     return (
-      <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
-        <View style={styles.column}>
-          <RegistroExito
-            nombre={form.razonSocial.trim()}
-            alRevisar={() => {
-              setEnviado(false);
-              irA(0);
-            }}
-          />
-        </View>
-      </SafeAreaView>
+      <RegistroExito
+        nombre={form.razonSocial.trim()}
+        alRevisar={() => {
+          setEnviado(false);
+          irA(0);
+        }}
+      />
     );
   }
 
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: colors.background }]}>
+    <View style={[styles.flex, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={styles.column}>
-          {/* Encabezado: volver + avance */}
-          <View
-            style={[
-              styles.header,
-              { paddingHorizontal: spacing.xl, paddingTop: spacing.md, gap: spacing.md },
-            ]}>
-            <Pressable
-              onPress={() => irA(paso - 1)}
-              disabled={paso === 0}
-              hitSlop={12}
-              accessibilityRole="button"
-              accessibilityLabel="Volver al paso anterior"
-              style={[styles.back, paso === 0 && styles.hidden]}>
-              <Icon name="back" />
-            </Pressable>
-            <View style={styles.flex}>
-              <StepProgress current={paso + 1} total={PASOS.length} label={nombre} />
-            </View>
-          </View>
+        <SafeAreaView edges={['top']} style={styles.column}>
+          <BarraSuperior
+            derecha={`PASO ${dosCifras(paso + 1)} / ${dosCifras(total)}`}
+            alVolver={paso > 0 ? () => irA(paso - 1) : undefined}
+          />
 
-          {/* Contenido del paso */}
           <ScrollView
             ref={scrollRef}
             style={styles.flex}
@@ -148,44 +162,41 @@ export function RegistroScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: spacing.xl,
-              paddingTop: spacing.xxl,
-              paddingBottom: spacing.xl,
+              paddingTop: spacing.xxxl,
+              paddingBottom: spacing.xxl,
+              gap: spacing.xxl,
             }}>
-            <Animated.View
-              key={paso}
-              entering={(haciaAdelante ? FadeInRight : FadeInLeft).duration(280)}
-              style={{ gap: spacing.xxl }}>
-              <View style={{ gap: spacing.sm }}>
-                <View style={[styles.accentBar, { backgroundColor: colors.primary }]} />
-                <AppText variant="title">{titulo}</AppText>
-                <AppText variant="body" color="textSecondary">
+            <View style={[styles.sello, { top: spacing.sm, right: spacing.lg }]}>
+              <Stamp>
+                <StampNumber value={paso + 1} />
+              </Stamp>
+            </View>
+
+            <View style={{ gap: spacing.md }}>
+              <Titular lineas={lineas} acento={acento} clave={paso} />
+              <Animated.View key={`bajada-${paso}`} entering={FadeIn.delay(220).duration(400)}>
+                <AppText variant="subhead" color="textSecondary">
                   {bajada}
                 </AppText>
-              </View>
+              </Animated.View>
+            </View>
 
+            <Animated.View key={`campos-${paso}`} entering={FadeIn.delay(280).duration(400)}>
               <Componente form={form} errores={errores} cambiar={cambiar} alTerminar={continuar} />
             </Animated.View>
           </ScrollView>
+        </SafeAreaView>
 
-          {/* Botón fijo abajo */}
-          <View
-            style={{
-              paddingHorizontal: spacing.xl,
-              paddingTop: spacing.md,
-              paddingBottom: spacing.lg,
-              borderTopWidth: StyleSheet.hairlineWidth,
-              borderTopColor: colors.border,
-              backgroundColor: colors.background,
-            }}>
-            <AppButton
-              label={esUltimo ? 'Enviar registro' : 'Continuar'}
-              loading={enviando}
-              onPress={continuar}
-            />
-          </View>
+        <View style={styles.barraInferior}>
+          <ActionBar
+            label={esUltimo ? 'Enviar registro' : 'Continuar'}
+            loading={enviando}
+            progress={(paso + 1) / total}
+            onPress={continuar}
+          />
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -193,8 +204,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   /** En pantallas anchas (tablet, web) el contenido no se estira de más. */
   column: { flex: 1, width: '100%', maxWidth: 520, alignSelf: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center' },
-  back: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  hidden: { opacity: 0 },
-  accentBar: { width: 28, height: 3, marginBottom: 8 },
+  barraInferior: { width: '100%', maxWidth: 520, alignSelf: 'center' },
+  sello: { position: 'absolute' },
 });

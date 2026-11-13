@@ -114,6 +114,9 @@ export const fonts = {
   medium: 'Inter_500Medium',
   semibold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
+  /** Serif editorial: solo para los titulares grandes. */
+  serif: 'InstrumentSerif_400Regular',
+  serifItalic: 'InstrumentSerif_400Regular_Italic',
 } as const;
 
 /** Escala tipográfica inspirada en iOS. */

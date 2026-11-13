@@ -7,7 +7,8 @@ import { useAppTheme, type AppColors } from '@/theme';
  * y para Android / web (Material Symbols), así se ven nativos en cada teléfono.
  */
 const ICONS = {
-  back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  back: { ios: 'arrow.left', android: 'arrow_back', web: 'arrow_back' },
+  forward: { ios: 'arrow.right', android: 'arrow_forward', web: 'arrow_forward' },
   camera: { ios: 'camera', android: 'photo_camera', web: 'photo_camera' },
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   document: { ios: 'doc.text', android: 'description', web: 'description' },
