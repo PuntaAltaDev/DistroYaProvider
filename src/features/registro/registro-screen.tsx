@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
+import { PanelProveedor } from '@/features/panel/panel-proveedor';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -90,6 +91,8 @@ export function RegistroScreen() {
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [enPanel, setEnPanel] = useState(false);
+  const [fechaEnvio, setFechaEnvio] = useState<Date>();
 
   const total = PASOS.length;
   const esUltimo = paso === total - 1;
@@ -127,20 +130,29 @@ export function RegistroScreen() {
     setTimeout(() => {
       setEnviando(false);
       setEnviado(true);
+      setFechaEnvio(new Date());
       haptics.success();
     }, 1200);
   };
 
-  if (enviado) {
+  if (enviado && enPanel) {
     return (
-      <RegistroExito
-        nombre={form.razonSocial.trim()}
-        alRevisar={() => {
-          setEnviado(false);
-          irA(0);
-        }}
+      <PanelProveedor
+        form={form}
+        listaInicial={
+          form.catalogo && fechaEnvio
+            ? { nombre: form.catalogo.name, tamano: form.catalogo.size, fecha: fechaEnvio }
+            : undefined
+        }
+        // Todavía no hay servidor: el perfil se guarda en la app. Acá va a ir la llamada a la API de Seba.
+        alGuardarPerfil={setForm}
       />
     );
+  }
+
+  if (enviado) {
+    // Simulación: el botón del final abre el panel, como si el admin ya lo hubiera aprobado.
+    return <RegistroExito nombre={form.razonSocial.trim()} alRevisar={() => setEnPanel(true)} />;
   }
 
   return (
