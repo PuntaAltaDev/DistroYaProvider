@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    // Alineado a la izquierda, como el resto de la pantalla.
+    justifyContent: 'flex-start',
   },
 });
