@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -6,12 +7,10 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
 import { permitirAvisos } from '@/features/avisos/avisos';
-import { AyudaScreen } from '@/features/ayuda/ayuda-screen';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
-import { LegalScreen } from '@/features/legal/legal-screen';
-import type { DocumentoLegal } from '@/features/legal/textos';
+import { verLegal } from '@/features/legal/ver-legal';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme, type AppColors, type ThemeMode } from '@/theme';
 
@@ -27,15 +26,9 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
   const { cuenta, actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
-  /** Pantalla que se abre encima: la ayuda o un documento legal. */
-  const [abierta, setAbierta] = useState<DocumentoLegal | 'ayuda'>();
   /** El teléfono tiene los avisos bloqueados: se ofrece ir a sus ajustes. */
   const [bloqueados, setBloqueados] = useState(false);
   const avisosActivos = !!cuenta.avisos?.activos;
-
-  const cerrar = () => setAbierta(undefined);
-  if (abierta === 'ayuda') return <AyudaScreen alVolver={cerrar} />;
-  if (abierta) return <LegalScreen documento={abierta} alVolver={cerrar} />;
 
   const cerrarSesion = () => {
     haptics.tap();
@@ -114,9 +107,9 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
       </Grupo>
 
       <Grupo titulo="AYUDA Y LEGAL" orden={3}>
-        <Fila etiqueta="Ayuda y contacto" flecha onPress={() => setAbierta('ayuda')} />
-        <Fila etiqueta="Términos y condiciones" flecha onPress={() => setAbierta('terminos')} />
-        <Fila etiqueta="Política de privacidad" flecha onPress={() => setAbierta('privacidad')} />
+        <Fila etiqueta="Ayuda y contacto" flecha onPress={() => router.push('/ayuda')} />
+        <Fila etiqueta="Términos y condiciones" flecha onPress={() => verLegal('terminos')} />
+        <Fila etiqueta="Política de privacidad" flecha onPress={() => verLegal('privacidad')} />
       </Grupo>
 
       <BottomSheet

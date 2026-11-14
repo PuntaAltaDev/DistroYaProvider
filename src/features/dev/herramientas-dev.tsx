@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -24,7 +25,12 @@ export function HerramientasDev() {
   return (
     <>
       <Pressable
-        onPress={reiniciar}
+        onPress={async () => {
+          await reiniciar();
+          // Las rutas protegidas sacan las pantallas de la cuenta; esto cierra también las
+          // abiertas sin cuenta (entrada, ayuda, legal) y deja solo la bienvenida.
+          router.dismissTo('/');
+        }}
         hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Volver al inicio (solo para pruebas)">

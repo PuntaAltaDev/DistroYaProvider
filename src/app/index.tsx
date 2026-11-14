@@ -1,6 +1,8 @@
-import { PantallaInicial } from '@/features/cuenta/pantalla-inicial';
+import { router } from 'expo-router';
 
-/** Pantalla inicial: según el estado del proveedor, el registro o su panel. */
-export default function Index() {
-  return <PantallaInicial />;
+import { BienvenidaScreen } from '@/features/bienvenida/bienvenida-screen';
+
+/** "/": bienvenida. Solo sin sesión iniciada. */
+export default function Bienvenida() {
+  return <BienvenidaScreen alEmpezar={() => router.push('/entrada')} />;
 }

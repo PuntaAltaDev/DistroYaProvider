@@ -24,11 +24,6 @@ type CuentaValor = {
   actualizar: (cambios: Cambios) => void;
   /** Borra todo lo guardado (datos y fotos) y vuelve al registro vacío. */
   reiniciar: () => Promise<void>;
-  /**
-   * Sube cada vez que se reinicia. Las pantallas lo usan como `key` para empezar de cero también
-   * lo que guardan en memoria (en qué pantalla estaba, qué había escrito).
-   */
-  generacion: number;
 };
 
 const CuentaContext = createContext<CuentaValor | null>(null);
@@ -45,7 +40,6 @@ function volcar(pendiente: RefObject<Temporizador | null>, ultima: RefObject<Cue
 
 export function CuentaProvider({ inicial, children }: { inicial: Cuenta; children: ReactNode }) {
   const [cuenta, setCuenta] = useState(inicial);
-  const [generacion, setGeneracion] = useState(0);
   const ultima = useRef(inicial);
   const pendiente = useRef<Temporizador | null>(null);
 
@@ -77,12 +71,11 @@ export function CuentaProvider({ inicial, children }: { inicial: Cuenta; childre
     pendiente.current = null;
     ultima.current = CUENTA_INICIAL;
     setCuenta(CUENTA_INICIAL);
-    setGeneracion((g) => g + 1);
     await Promise.all([borrarCuenta(), borrarImagenes()]);
   };
 
   return (
-    <CuentaContext.Provider value={{ cuenta, actualizar, reiniciar, generacion }}>
+    <CuentaContext.Provider value={{ cuenta, actualizar, reiniciar }}>
       {children}
     </CuentaContext.Provider>
   );
