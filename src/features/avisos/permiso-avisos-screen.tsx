@@ -23,9 +23,7 @@ export function PermisoAvisosScreen({ alResponder }: { alResponder: (activos: bo
   };
 
   return (
-    <Marco
-      derecha="AVISOS"
-      accion={{ label: 'Activar avisos', onPress: activar, loading: pidiendo }}>
+    <Marco accion={{ label: 'Activar avisos', onPress: activar, loading: pidiendo }}>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['Te avisamos']} acento="a tiempo." clave="permiso-avisos" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>

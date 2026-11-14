@@ -75,7 +75,6 @@ export function EntradaScreen({
 
   return (
     <Marco
-      derecha="ACCESO"
       alVolver={enviado ? cambiarEmail : alVolver}
       accion={
         enviado

@@ -22,7 +22,7 @@ type AvisosScreenProps = {
 /** Bandeja de avisos. Al tocar uno, lleva a la pantalla que corresponde. */
 export function AvisosScreen({ avisos, nuevos, alAbrir, alVolver }: AvisosScreenProps) {
   return (
-    <Marco derecha="AVISOS" alVolver={alVolver}>
+    <Marco alVolver={alVolver}>
       <Titular lineas={['Tus']} acento="avisos." clave="avisos" />
 
       {avisos.length === 0 ? (

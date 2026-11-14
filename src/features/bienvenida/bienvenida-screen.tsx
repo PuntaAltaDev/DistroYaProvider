@@ -24,7 +24,7 @@ export function BienvenidaScreen({ alEmpezar }: BienvenidaScreenProps) {
   return (
     <View style={[styles.flex, { backgroundColor: colors.background }]}>
       <SafeAreaView edges={['top']} style={[styles.column, styles.flex]}>
-        <BarraSuperior derecha="BIENVENIDO" />
+        <BarraSuperior />
 
         <View style={[styles.reparto, { paddingHorizontal: spacing.xl, gap: spacing.xxl }]}>
           <View style={[styles.marca, { gap: spacing.lg }]}>

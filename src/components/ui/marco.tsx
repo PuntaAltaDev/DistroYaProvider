@@ -7,8 +7,6 @@ import { BarraSuperior } from '@/components/ui/editorial';
 import { useAppTheme } from '@/theme';
 
 type MarcoProps = {
-  /** Texto de la barra de arriba, a la derecha (ej.: "MI PLAN"). */
-  derecha: string;
   alVolver?: () => void;
   /** Botón negro de abajo. Si no está, la pantalla no lleva barra inferior. */
   accion?: { label: string; onPress: () => void; loading?: boolean };
@@ -16,7 +14,7 @@ type MarcoProps = {
 };
 
 /** Esqueleto de las pantallas del panel: barra de arriba, contenido con scroll y barra negra abajo. */
-export function Marco({ derecha, alVolver, accion, children }: MarcoProps) {
+export function Marco({ alVolver, accion, children }: MarcoProps) {
   const { colors, spacing } = useAppTheme();
 
   return (
@@ -24,7 +22,7 @@ export function Marco({ derecha, alVolver, accion, children }: MarcoProps) {
       style={[styles.flex, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <SafeAreaView edges={accion ? ['top'] : ['top', 'bottom']} style={styles.column}>
-        <BarraSuperior derecha={derecha} alVolver={alVolver} />
+        <BarraSuperior alVolver={alVolver} />
         <ScrollView
           style={styles.flex}
           keyboardShouldPersistTaps="handled"

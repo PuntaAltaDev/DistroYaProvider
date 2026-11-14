@@ -53,7 +53,7 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
   };
 
   return (
-    <Marco derecha="AJUSTES" alVolver={alVolver}>
+    <Marco alVolver={alVolver}>
       <Titular lineas={['Tus']} acento="ajustes." clave="ajustes" />
 
       <Grupo titulo="APARIENCIA" orden={0}>

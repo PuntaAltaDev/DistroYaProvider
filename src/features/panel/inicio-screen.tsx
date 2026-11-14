@@ -28,7 +28,7 @@ export function InicioScreen({ nombre, accesos }: InicioScreenProps) {
   const { spacing } = useAppTheme();
 
   return (
-    <Marco derecha="INICIO">
+    <Marco>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['Hola,']} acento={`${nombre || 'proveedor'}.`} clave="inicio" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>

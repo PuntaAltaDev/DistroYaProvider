@@ -39,7 +39,7 @@ export function AyudaScreen({ alVolver }: { alVolver: () => void }) {
   const { colors, spacing } = useAppTheme();
 
   return (
-    <Marco derecha="AYUDA" alVolver={alVolver}>
+    <Marco alVolver={alVolver}>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['¿Te']} acento="ayudamos?" clave="ayuda" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>

@@ -41,7 +41,6 @@ export function PlanesScreen({ actual, alContratar, alVolver }: PlanesScreenProp
 
   return (
     <Marco
-      derecha="PLANES"
       alVolver={pagando ? undefined : alVolver}
       accion={{ label: `Pagar ${precio(elegido.precio)}`, onPress: pagar, loading: pagando }}>
       <View style={{ gap: spacing.md }}>

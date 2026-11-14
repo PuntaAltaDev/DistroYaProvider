@@ -76,7 +76,6 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
 
   return (
     <Marco
-      derecha="MI PERFIL"
       alVolver={alVolver}
       accion={{ label: guardado ? 'Cambios guardados' : 'Guardar cambios', onPress: guardar }}>
       <View style={{ gap: spacing.md }}>

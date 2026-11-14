@@ -18,10 +18,10 @@ type LegalScreenProps = {
 /** Términos y condiciones o política de privacidad: título y secciones cortas. */
 export function LegalScreen({ documento, alVolver }: LegalScreenProps) {
   const { spacing } = useAppTheme();
-  const { barra, lineas, acento, secciones } = TEXTOS_LEGALES[documento];
+  const { lineas, acento, secciones } = TEXTOS_LEGALES[documento];
 
   return (
-    <Marco derecha={barra} alVolver={alVolver}>
+    <Marco alVolver={alVolver}>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={lineas} acento={acento} clave={documento} />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>

@@ -13,7 +13,7 @@ export function RegistroExito({ nombre, alAyuda }: { nombre: string; alAyuda: ()
   const { colors, spacing } = useAppTheme();
 
   return (
-    <Marco derecha="EN REVISIÓN">
+    <Marco>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['Listo.', 'Ya estás']} acento="en camino." clave="exito" />
         <Animated.View entering={FadeIn.delay(260).duration(400)}>

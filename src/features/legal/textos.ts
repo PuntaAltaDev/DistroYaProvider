@@ -14,8 +14,6 @@ export type DocumentoLegal = 'terminos' | 'privacidad';
 type Seccion = { titulo: string; texto: string };
 
 export type TextoLegal = {
-  /** Texto corto para la barra de arriba. */
-  barra: string;
   lineas: string[];
   acento: string;
   secciones: Seccion[];
@@ -23,7 +21,6 @@ export type TextoLegal = {
 
 export const TEXTOS_LEGALES: Record<DocumentoLegal, TextoLegal> = {
   terminos: {
-    barra: 'TÉRMINOS',
     lineas: ['Términos y'],
     acento: 'condiciones.',
     secciones: [
@@ -65,7 +62,6 @@ export const TEXTOS_LEGALES: Record<DocumentoLegal, TextoLegal> = {
     ],
   },
   privacidad: {
-    barra: 'PRIVACIDAD',
     lineas: ['Política de'],
     acento: 'privacidad.',
     secciones: [

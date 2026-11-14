@@ -16,10 +16,7 @@ type ListaScreenProps = {
 /** La lista de precios actual y las anteriores. */
 export function ListaScreen({ actual, historial, alSubir, alVolver }: ListaScreenProps) {
   return (
-    <Marco
-      derecha="LISTA DE PRECIOS"
-      alVolver={alVolver}
-      accion={{ label: 'Volver', onPress: alVolver }}>
+    <Marco alVolver={alVolver} accion={{ label: 'Volver', onPress: alVolver }}>
       <Titular lineas={['Tu lista']} acento="de precios." clave="lista" />
       <Animated.View entering={FadeInDown.delay(260).duration(400)}>
         <ListaDePrecios actual={actual} historial={historial} alSubir={alSubir} />

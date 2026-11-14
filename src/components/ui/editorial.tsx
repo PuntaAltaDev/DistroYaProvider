@@ -13,13 +13,14 @@ import { useRanuraDev } from '@/components/ui/ranura-dev';
 import { fonts, useAppTheme } from '@/theme';
 
 type BarraSuperiorProps = {
-  derecha: string;
+  /** Dato a la derecha, después de los íconos (ej.: "01 / 06" en el registro). */
+  derecha?: string;
   alVolver?: () => void;
   /** Avance de 0 a 1. Si está, la línea de abajo crece con cada paso, en ámbar. */
   progreso?: number;
 };
 
-/** Barra de arriba: marca a la izquierda, dato a la derecha y una línea debajo. */
+/** Barra de arriba: marca a la izquierda, íconos a la derecha y una línea debajo. */
 export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProps) {
   const { colors, spacing, motion } = useAppTheme();
   const herramientasDev = useRanuraDev();
@@ -66,9 +67,11 @@ export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProp
         <View style={[styles.fila, { gap: spacing.lg }]}>
           {herramientasDev}
           <CambioDeModo />
-          <AppText variant="caption" style={styles.derecha}>
-            {derecha}
-          </AppText>
+          {derecha ? (
+            <AppText variant="caption" style={styles.derecha}>
+              {derecha}
+            </AppText>
+          ) : null}
         </View>
       </View>
       {conAvance ? (

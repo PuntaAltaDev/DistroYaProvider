@@ -20,7 +20,7 @@ export function RegistroRechazado({ nombre, motivo, alCorregir, alAyuda }: Regis
   const { colors, spacing } = useAppTheme();
 
   return (
-    <Marco derecha="A CORREGIR" accion={{ label: 'Corregir y reenviar', onPress: alCorregir }}>
+    <Marco accion={{ label: 'Corregir y reenviar', onPress: alCorregir }}>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['Revisá']} acento="tus datos." clave="rechazado" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>

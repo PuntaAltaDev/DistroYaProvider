@@ -63,7 +63,6 @@ export function SuscripcionScreen({
 
   return (
     <Marco
-      derecha="MI PLAN"
       alVolver={alVolver}
       accion={{
         label: estado === 'activa' ? 'Extender o cambiar plan' : 'Renovar plan',
