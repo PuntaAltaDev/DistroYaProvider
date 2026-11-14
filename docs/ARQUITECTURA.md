@@ -18,7 +18,10 @@ Cómo está organizado el código de DistroYa Proveedores y las reglas que se si
 
 ```
 src/
-  app/            Rutas. Cada archivo es una pantalla y solo arma la pantalla de features/.
+  app/            Rutas. Cada archivo es una pantalla: arma la de features/ y le dice adónde ir
+                  (router). _layout.tsx decide qué rutas existen según la etapa de la cuenta.
+    panel/        "/panel/…": inicio, perfil, plan, planes, permiso de avisos, lista, avisos y ajustes.
+    legal/        "/legal/terminos" y "/legal/privacidad".
   components/ui/  Piezas reutilizables sin lógica de negocio: texto, campo, chip, ícono, barra de acción,
                   barra superior y titular (editorial), marco de pantalla (marco) y el lugar de las
                   herramientas de prueba en la barra (ranura-dev).
@@ -31,12 +34,12 @@ src/
     suscripcion/  Plan del proveedor (ver, elegir, renovar) y lista de precios con historial.
     avisos/       Bandeja de avisos, permiso, y recordatorios del vencimiento en el teléfono.
     ayuda/        Contacto (WhatsApp y email) y preguntas frecuentes.
-    cuenta/       Estado del proveedor guardado en el teléfono, y qué pantalla abrir.
+    cuenta/       Estado del proveedor guardado en el teléfono.
     ajustes/      Apariencia, avisos, cerrar sesión, eliminar cuenta, ayuda y legal.
     dev/          Herramientas de prueba (solo en desarrollo): volver al inicio y simular al servidor.
   data/           Datos de ejemplo (se reemplazan por la API).
   lib/            Servicios y ayudas sin pantalla (Google Places, almacén de datos, ajustes, vibración,
-                  avisos del teléfono).
+                  avisos del teléfono, botón "atrás" de Android).
   theme/          Colores, tipografía, espacios y animaciones.
 ```
 
@@ -62,23 +65,23 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 
 ## Datos de prueba que se reemplazan con la API
 
-| Qué                            | Dónde                                                          | Se reemplaza por                                       |
-| ------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------ |
-| Rubros                         | `src/data/rubros.ts`                                           | Tags de la API                                         |
-| Plan del proveedor             | `suscripcion` en la cuenta (`features/cuenta/cuenta.ts`)       | Suscripción del proveedor                              |
-| Planes y precios               | `PLANES` en `features/suscripcion/planes.ts`                   | Planes de la API                                       |
-| Pago del plan                  | `pagar` en `features/suscripcion/planes-screen.tsx`            | Mercado Pago a través del backend                      |
-| Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`         | Historial de listas de la API                          |
-| Envío del registro             | `continuar` en `features/registro/registro-screen.tsx`         | Alta del proveedor en la API                           |
-| Aprobación o rechazo           | Simulador en `features/dev/simulaciones.ts`                    | Estado y motivo que devuelve la API                    |
-| Avisos de la bandeja           | `avisosDe` en `features/avisos/avisos.ts`                      | Avisos de la API (y push)                              |
-| Textos legales                 | `features/legal/textos.ts` (borrador)                          | Textos revisados por un abogado                        |
-| Contacto de soporte            | `CONTACTO` en `features/ayuda/contenido.ts`                    | Número y email reales                                  |
-| Estado y borrador de la cuenta | `features/cuenta/` (se guarda en el teléfono)                  | Borrador local y estado desde la API                   |
-| Guardado del perfil            | `actualizar({ form })` en `features/panel/panel-proveedor.tsx` | Actualización del perfil en la API                     |
-| Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx`      | Baja de la cuenta en la API, y después borrar lo local |
-| Búsqueda de direcciones        | `src/lib/places.ts` (la app habla directo con Google)          | Llamadas al backend, sin clave en la app               |
-| Logo y lista en el teléfono    | `features/registro/logo.ts`                                    | Subida a Blob Storage                                  |
+| Qué                            | Dónde                                                     | Se reemplaza por                                       |
+| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------ |
+| Rubros                         | `src/data/rubros.ts`                                      | Tags de la API                                         |
+| Plan del proveedor             | `suscripcion` en la cuenta (`features/cuenta/cuenta.ts`)  | Suscripción del proveedor                              |
+| Planes y precios               | `PLANES` en `features/suscripcion/planes.ts`              | Planes de la API                                       |
+| Pago del plan                  | `pagar` en `features/suscripcion/planes-screen.tsx`       | Mercado Pago a través del backend                      |
+| Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`    | Historial de listas de la API                          |
+| Envío del registro             | `continuar` en `features/registro/registro-screen.tsx`    | Alta del proveedor en la API                           |
+| Aprobación o rechazo           | Simulador en `features/dev/simulaciones.ts`               | Estado y motivo que devuelve la API                    |
+| Avisos de la bandeja           | `avisosDe` en `features/avisos/avisos.ts`                 | Avisos de la API (y push)                              |
+| Textos legales                 | `features/legal/textos.ts` (borrador)                     | Textos revisados por un abogado                        |
+| Contacto de soporte            | `CONTACTO` en `features/ayuda/contenido.ts`               | Número y email reales                                  |
+| Estado y borrador de la cuenta | `features/cuenta/` (se guarda en el teléfono)             | Borrador local y estado desde la API                   |
+| Guardado del perfil            | `actualizar({ form })` en `app/panel/perfil.tsx`          | Actualización del perfil en la API                     |
+| Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx` | Baja de la cuenta en la API, y después borrar lo local |
+| Búsqueda de direcciones        | `src/lib/places.ts` (la app habla directo con Google)     | Llamadas al backend, sin clave en la app               |
+| Logo y lista en el teléfono    | `features/registro/logo.ts`                               | Subida a Blob Storage                                  |
 
 ## Deudas conocidas
 
@@ -86,7 +89,6 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 
 - `cuenta` guarda el formulario de `registro` y `registro` usa a `cuenta`: no hay ciclo de archivos, pero las dos carpetas se necesitan entre sí.
 - Las pantallas no tienen pruebas automáticas todavía.
-- La navegación entre pantallas es por estado (`useState`) y no por rutas de Expo Router: no hay botón "atrás" de Android ni transiciones nativas, y abrir los términos desde el acceso pierde el email escrito.
 
 ## Decisiones
 
@@ -100,10 +102,11 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **El modo claro/oscuro es una preferencia aparte de la cuenta:** eliminar la cuenta no la borra.
 - **El logo es el carrito** (`components/ui/logo.tsx`). El ícono, el splash y el favicon salen de `scripts/generar-iconos.mjs` (`npm run iconos`); si se cambia el dibujo, se cambia en los dos lugares. Frase: "Proveedores y comercios, conectados."
 - **La bienvenida se muestra una sola vez** (`iniciada` en la cuenta). Se entra con el email (código de 6 números) o con Google. **Ambos están simulados**: cualquier código sirve y Google entra sin pedir nada. Con el login de Seba se cambia lo que hacen `alEnviarCodigo`, `alConfirmar` y `alGoogle` en `features/acceso/acceso.tsx`; las pantallas quedan igual. La cuenta guarda `metodo` y `email` (con Google, el email lo va a dar la API). Registrarse e iniciar sesión son la misma pantalla: con la API, la respuesta decide si sigue el registro del negocio, la espera o el panel.
-- **"Cerrar sesión" (Ajustes) pone `iniciada` en falso** y conserva el perfil y el avance: al volver a entrar, sigue donde estaba. `PantallaInicial` pasa siempre por el acceso cuando no hay sesión. Con la API, además se cierra la sesión en el servidor.
+- **"Cerrar sesión" (Ajustes) pone `iniciada` en falso** y conserva el perfil y el avance: al volver a entrar, sigue donde estaba. Sin sesión, las rutas protegidas solo dejan ver la bienvenida y el acceso. Con la API, además se cierra la sesión en el servidor.
 - **Términos y privacidad se aceptan al entrar** ("Al continuar aceptás…"). La cuenta guarda la versión aceptada (`VERSION_LEGAL`) y la fecha; si cambian los textos, se sube la versión. Los textos son un borrador hasta que los revise un abogado.
 - **Perfil rechazado:** el administrador manda un motivo; "Corregir y reenviar" vuelve al registro con los datos cargados y el motivo a la vista en cada paso. Al reenviar, el motivo se borra.
 - **Planes:** si el plan sigue vigente, lo que se paga se suma al tiempo que queda (no se pierde nada al renovar antes). Sin plan, el perfil no aparece en el buscador y el inicio pide elegir uno.
-- **Avisos:** el permiso del sistema se pide una sola vez y en contexto (después de contratar el primer plan), con una pantalla propia antes, porque el sistema no vuelve a preguntar si se niega. Los recordatorios son locales (llegan sin servidor): 7 días antes a las 10 y el día que vence. Los push del servidor necesitan una development build y el backend; cuando lleguen, se suma el plugin `expo-notifications` en `app.json`. Tocar un aviso del teléfono todavía no abre la bandeja: llega con la navegación por rutas.
+- **Avisos:** el permiso del sistema se pide una sola vez y en contexto (después de contratar el primer plan), con una pantalla propia antes, porque el sistema no vuelve a preguntar si se niega. Los recordatorios son locales (llegan sin servidor): 7 días antes a las 10 y el día que vence. Los push del servidor necesitan una development build y el backend; cuando lleguen, se suma el plugin `expo-notifications` en `app.json`. Tocar un aviso del teléfono abre la bandeja (`/panel/avisos`), también con la app cerrada.
+- **Navegación con rutas protegidas** (`Stack.Protected` en `app/_layout.tsx`). Cada etapa de la cuenta tiene sus rutas: sin sesión, `/` y `/entrada`; después `/registro`, `/en-revision`, `/rechazado` o `/panel/…`. Ayuda y legales están siempre. Cuando cambia la etapa (entrar, enviar, aprobar, cerrar sesión, eliminar), el router saca las pantallas viejas y lleva a la de la etapa nueva (`redirectTo`): ninguna pantalla navega a mano entre etapas. Una ruta que no corresponde (ej.: un link a `/panel` sin sesión) lleva a la etapa actual. Dentro de una pantalla con pasos (registro, código del acceso), el "atrás" de Android vuelve al paso anterior (`lib/atras.ts`).
 - **Las herramientas de prueba no viven en `components`:** la barra las recibe por contexto (`RanuraDev`), así se respeta la regla de dependencias. Solo existen con `__DEV__`.
 - **Sin pantallas de carga, error o sin conexión todavía** en lo que depende de la API: se hacen cuando exista el contrato de la API, para no escribir código a ciegas.
