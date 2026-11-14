@@ -26,26 +26,22 @@ export function RegistroExito({ nombre, alRevisar }: RegistroExitoProps) {
         <ScrollView
           style={styles.flex}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.contenido}
-        >
+          contentContainerStyle={styles.contenido}>
           <View
-            style={[styles.reparto, {
-              paddingHorizontal: spacing.xl,
-              paddingTop: spacing.xxl,
-              paddingBottom: spacing.xxl,
-              gap: spacing.xxl,
-            }]}
-          >
+            style={[
+              styles.reparto,
+              {
+                paddingHorizontal: spacing.xl,
+                paddingTop: spacing.xxl,
+                paddingBottom: spacing.xxl,
+                gap: spacing.xxl,
+              },
+            ]}>
             <View style={{ gap: spacing.md }}>
-              <Titular
-                lineas={['Listo.', 'Ya estás']}
-                acento="en camino."
-                clave="exito"
-              />
+              <Titular lineas={['Listo.', 'Ya estás']} acento="en camino." clave="exito" />
               <Animated.View entering={FadeIn.delay(260).duration(400)}>
                 <AppText variant="subhead" color="textSecondary">
-                  Estamos revisando los datos de {nombre}. Te avisamos cuando tu
-                  perfil esté activo.
+                  Estamos revisando los datos de {nombre}. Te avisamos cuando tu perfil esté activo.
                 </AppText>
               </Animated.View>
             </View>
@@ -59,13 +55,11 @@ export function RegistroExito({ nombre, alRevisar }: RegistroExitoProps) {
                   paddingVertical: spacing.md,
                   borderColor: colors.text,
                 },
-              ]}
-            >
+              ]}>
               <Icon name="clock" size={18} color="primaryText" />
               <AppText variant="callout">Pendiente de aprobación</AppText>
             </Animated.View>
           </View>
-
         </ScrollView>
       </SafeAreaView>
 

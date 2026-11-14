@@ -95,7 +95,10 @@ export function LineField({
 
   return (
     <View style={{ gap: spacing.sm }}>
-      <Pressable onPress={() => inputRef.current?.focus()} accessible={false} style={{ gap: spacing.xs }}>
+      <Pressable
+        onPress={() => inputRef.current?.focus()}
+        accessible={false}
+        style={{ gap: spacing.xs }}>
         <AppText
           variant="overline"
           color={error ? 'danger' : focused ? 'primaryText' : 'textSecondary'}

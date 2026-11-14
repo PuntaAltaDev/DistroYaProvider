@@ -58,7 +58,9 @@ function ThemedNavigation() {
         },
       }}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+      <Stack
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
+      />
     </ThemeProvider>
   );
 }

@@ -51,7 +51,9 @@ export function PanelProveedor({ form, listaInicial, alGuardarPerfil }: PanelPro
     return <SuscripcionScreen suscripcion={suscripcion} alVolver={volver} />;
   }
   if (pantalla === 'lista') {
-    return <ListaScreen actual={lista} historial={historial} alSubir={subirLista} alVolver={volver} />;
+    return (
+      <ListaScreen actual={lista} historial={historial} alSubir={subirLista} alVolver={volver} />
+    );
   }
 
   const estado = estadoDe(suscripcion);
@@ -77,7 +79,9 @@ export function PanelProveedor({ form, listaInicial, alGuardarPerfil }: PanelPro
         },
         {
           titulo: 'Lista de precios',
-          detalle: lista ? `${lista.nombre} · ${fechaCorta(lista.fecha)}` : 'Todavía no subiste tu lista',
+          detalle: lista
+            ? `${lista.nombre} · ${fechaCorta(lista.fecha)}`
+            : 'Todavía no subiste tu lista',
           aviso: !lista,
           onPress: () => setPantalla('lista'),
         },

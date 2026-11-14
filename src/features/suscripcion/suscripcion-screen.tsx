@@ -42,7 +42,8 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
   const estado = estadoDe(suscripcion);
   const dias = diasRestantes(suscripcion);
   const queda = fraccionRestante(suscripcion);
-  const colorAviso = estado === 'vencida' ? 'danger' : estado === 'por-vencer' ? 'primaryText' : 'textSecondary';
+  const colorAviso =
+    estado === 'vencida' ? 'danger' : estado === 'por-vencer' ? 'primaryText' : 'textSecondary';
 
   // La línea de tiempo restante se llena al entrar.
   const avance = useSharedValue(0);
@@ -67,7 +68,10 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
         <AppText variant="overline" color="textSecondary">
           {estado === 'vencida' ? 'VENCIÓ EL' : 'VENCE EL'}
         </AppText>
-        <AppText numberOfLines={1} adjustsFontSizeToFit style={[styles.fecha, { color: colors.text }]}>
+        <AppText
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          style={[styles.fecha, { color: colors.text }]}>
           {fechaLarga(suscripcion.endDate)}
         </AppText>
         <View style={[styles.pista, { backgroundColor: colors.border }]}>
@@ -93,7 +97,13 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
 }
 
 const styles = StyleSheet.create({
-  fecha: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 35, letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
+  fecha: {
+    fontFamily: fonts.semibold,
+    fontSize: 28,
+    lineHeight: 35,
+    letterSpacing: -0.8,
+    fontVariant: ['tabular-nums'],
+  },
   pista: { height: 1, justifyContent: 'center' },
   relleno: { height: 2.5 },
 });

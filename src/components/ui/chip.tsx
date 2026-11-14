@@ -61,7 +61,8 @@ export function Chip({ label, selected, onToggle }: ChipProps) {
           },
           boxStyle,
         ]}>
-        <Animated.Text style={[{ fontFamily: fonts.medium, fontSize: 15, lineHeight: 20 }, textStyle]}>
+        <Animated.Text
+          style={[{ fontFamily: fonts.medium, fontSize: 15, lineHeight: 20 }, textStyle]}>
           {label}
         </Animated.Text>
       </Animated.View>

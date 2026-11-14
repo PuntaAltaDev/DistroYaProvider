@@ -20,12 +20,7 @@ export type RegistroForm = {
 };
 
 export type CampoConError =
-  | 'razonSocial'
-  | 'whatsapp'
-  | 'telefono'
-  | 'direccion'
-  | 'rubros'
-  | 'catalogo';
+  'razonSocial' | 'whatsapp' | 'telefono' | 'direccion' | 'rubros' | 'catalogo';
 
 export type Errores = Partial<Record<CampoConError, string>>;
 

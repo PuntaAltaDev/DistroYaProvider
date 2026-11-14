@@ -19,7 +19,10 @@ import { useAppTheme } from '@/theme';
 const ESPERA_MS = 300;
 const MIN_LETRAS = 3;
 
-type CampoDireccionProps = Pick<TextInputProps, 'autoFocus' | 'returnKeyType' | 'onSubmitEditing'> & {
+type CampoDireccionProps = Pick<
+  TextInputProps,
+  'autoFocus' | 'returnKeyType' | 'onSubmitEditing'
+> & {
   valor: string;
   lugar?: Lugar;
   error?: string;
@@ -81,7 +84,8 @@ export function CampoDireccion({
         setSugerencias(await buscarDirecciones(texto.trim(), sesion.current, control.signal));
       } catch {
         // Una búsqueda cancelada no es un error: solo se avisa si la pidió el usuario y falló.
-        if (!control.signal.aborted) setFallo('No pudimos buscar la dirección. Revisá tu conexión.');
+        if (!control.signal.aborted)
+          setFallo('No pudimos buscar la dirección. Revisá tu conexión.');
       }
     }, ESPERA_MS);
   };

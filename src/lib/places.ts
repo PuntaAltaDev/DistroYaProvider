@@ -127,7 +127,12 @@ export async function detalleDeLugar(
     calle: parte('route'),
     numero: parte('street_number'),
     // En muchos pueblos Google no marca "locality": se cae al partido o al barrio.
-    localidad: parte('locality', 'administrative_area_level_2', 'sublocality', 'sublocality_level_1'),
+    localidad: parte(
+      'locality',
+      'administrative_area_level_2',
+      'sublocality',
+      'sublocality_level_1',
+    ),
     provincia: parte('administrative_area_level_1'),
     codigoPostal: parte('postal_code'),
     latitud: datos.location?.latitude ?? 0,

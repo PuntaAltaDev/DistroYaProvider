@@ -40,7 +40,9 @@ export function InicioScreen({ nombre, accesos }: InicioScreenProps) {
 
       <View>
         {accesos.map((acceso, i) => (
-          <Animated.View key={acceso.titulo} entering={FadeInDown.delay(280 + i * 80).duration(400)}>
+          <Animated.View
+            key={acceso.titulo}
+            entering={FadeInDown.delay(280 + i * 80).duration(400)}>
             <FilaAcceso numero={i + 1} primera={i === 0} {...acceso} />
           </Animated.View>
         ))}
@@ -82,7 +84,11 @@ function FilaAcceso({
       </AppText>
       <View style={[styles.flex, { gap: spacing.xxs }]}>
         <AppText style={[styles.titulo, { color: colors.text }]}>{titulo}</AppText>
-        <AppText variant="footnote" color={aviso ? 'primaryText' : 'textSecondary'} numberOfLines={1} ellipsizeMode="middle">
+        <AppText
+          variant="footnote"
+          color={aviso ? 'primaryText' : 'textSecondary'}
+          numberOfLines={1}
+          ellipsizeMode="middle">
           {detalle}
         </AppText>
       </View>
@@ -98,7 +104,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  numero: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 22, width: 26, fontVariant: ['tabular-nums'] },
+  numero: {
+    fontFamily: fonts.regular,
+    fontSize: 17,
+    lineHeight: 22,
+    width: 26,
+    fontVariant: ['tabular-nums'],
+  },
   /** El alto de línea no baja de 1,25 del tamaño: si no, se corta la "p" de "precios". */
   titulo: { fontFamily: fonts.semibold, fontSize: 24, lineHeight: 30, letterSpacing: -0.7 },
 });

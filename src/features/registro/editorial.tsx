@@ -19,11 +19,7 @@ type BarraSuperiorProps = {
 };
 
 /** Barra de arriba: marca a la izquierda, dato a la derecha y una línea debajo. */
-export function BarraSuperior({
-  derecha,
-  alVolver,
-  progreso,
-}: BarraSuperiorProps) {
+export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProps) {
   const { colors, spacing, motion } = useAppTheme();
   const conAvance = progreso !== undefined;
   const avance = useSharedValue(progreso ?? 0);
@@ -47,16 +43,14 @@ export function BarraSuperior({
             borderBottomWidth: conAvance ? 0 : 1,
             borderBottomColor: colors.text,
           },
-        ]}
-      >
+        ]}>
         <View style={[styles.fila, { gap: spacing.md }]}>
           {alVolver ? (
             <Pressable
               onPress={alVolver}
               hitSlop={14}
               accessibilityRole="button"
-              accessibilityLabel="Volver al paso anterior"
-            >
+              accessibilityLabel="Volver al paso anterior">
               <Icon name="back" size={20} />
             </Pressable>
           ) : null}
@@ -75,13 +69,7 @@ export function BarraSuperior({
         </View>
       </View>
       {conAvance ? (
-        <Animated.View
-          style={[
-            styles.avance,
-            { backgroundColor: colors.primary },
-            avanceStyle,
-          ]}
-        />
+        <Animated.View style={[styles.avance, { backgroundColor: colors.primary }, avanceStyle]} />
       ) : null}
     </View>
   );
@@ -142,8 +130,7 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
         <Animated.Text
           key={`${clave}-${i}`}
           entering={FadeInDown.delay(i * 70).duration(420)}
-          style={[base, i > 0 && juntar, { color: colors.text }]}
-        >
+          style={[base, i > 0 && juntar, { color: colors.text }]}>
           {linea}
         </Animated.Text>
       ))}
@@ -154,8 +141,7 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
           base,
           lineas.length > 0 && juntar,
           { fontFamily: fonts.light, color: colors.accent },
-        ]}
-      >
+        ]}>
         {acento}
       </Animated.Text>
     </View>

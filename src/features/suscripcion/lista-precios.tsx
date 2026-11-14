@@ -55,7 +55,12 @@ export function ListaDePrecios({ actual, historial, alSubir }: ListaDePreciosPro
         <Animated.View
           key={actual?.nombre ?? 'sin-lista'}
           entering={FadeIn.duration(300)}
-          style={[styles.fila, styles.bordes, linea, { gap: spacing.md, paddingVertical: spacing.lg }]}>
+          style={[
+            styles.fila,
+            styles.bordes,
+            linea,
+            { gap: spacing.md, paddingVertical: spacing.lg },
+          ]}>
           <Icon name="document" size={26} color={actual ? 'primaryText' : 'textMuted'} />
           <View style={styles.flex}>
             {actual ? (
@@ -99,8 +104,18 @@ export function ListaDePrecios({ actual, historial, alSubir }: ListaDePreciosPro
                 key={`${archivo.nombre}-${archivo.fecha.getTime()}`}
                 entering={FadeInDown.duration(300)}
                 layout={LinearTransition.duration(250)}
-                style={[styles.fila, styles.bordeAbajo, linea, { gap: spacing.md, paddingVertical: spacing.md }]}>
-                <AppText variant="callout" color="textSecondary" numberOfLines={1} ellipsizeMode="middle" style={styles.flex}>
+                style={[
+                  styles.fila,
+                  styles.bordeAbajo,
+                  linea,
+                  { gap: spacing.md, paddingVertical: spacing.md },
+                ]}>
+                <AppText
+                  variant="callout"
+                  color="textSecondary"
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                  style={styles.flex}>
                   {archivo.nombre}
                 </AppText>
                 <AppText variant="footnote" color="textSecondary">

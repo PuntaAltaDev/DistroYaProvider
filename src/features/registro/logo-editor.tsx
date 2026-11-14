@@ -102,7 +102,8 @@ export function LogoEditor({ imagen, ajusteInicial, alListo, alCancelar }: LogoE
       {/* Los modales necesitan su propia raíz de gestos. */}
       <GestureHandlerRootView style={[styles.flex, { backgroundColor: colors.background }]}>
         <SafeAreaView edges={['top']} style={styles.column}>
-          <View style={[styles.barra, { paddingHorizontal: spacing.xl, paddingVertical: spacing.lg }]}>
+          <View
+            style={[styles.barra, { paddingHorizontal: spacing.xl, paddingVertical: spacing.lg }]}>
             <Pressable onPress={alCancelar} hitSlop={14} accessibilityRole="button">
               <AppText variant="callout" color="textSecondary">
                 Cancelar
@@ -130,7 +131,12 @@ export function LogoEditor({ imagen, ajusteInicial, alListo, alCancelar }: LogoE
                 <Animated.View
                   style={[
                     styles.foto,
-                    { width: ancho, height: alto, left: (diametro - ancho) / 2, top: (diametro - alto) / 2 },
+                    {
+                      width: ancho,
+                      height: alto,
+                      left: (diametro - ancho) / 2,
+                      top: (diametro - alto) / 2,
+                    },
                     fotoStyle,
                   ]}>
                   <Image
@@ -162,7 +168,15 @@ export function LogoEditor({ imagen, ajusteInicial, alListo, alCancelar }: LogoE
   );
 }
 
-function BotonZoom({ signo, etiqueta, onPress }: { signo: string; etiqueta: string; onPress: () => void }) {
+function BotonZoom({
+  signo,
+  etiqueta,
+  onPress,
+}: {
+  signo: string;
+  etiqueta: string;
+  onPress: () => void;
+}) {
   const { colors } = useAppTheme();
   return (
     <Pressable
@@ -171,7 +185,10 @@ function BotonZoom({ signo, etiqueta, onPress }: { signo: string; etiqueta: stri
       accessibilityLabel={etiqueta}
       style={({ pressed }) => [
         styles.zoom,
-        { borderColor: colors.borderStrong, backgroundColor: pressed ? colors.primarySoft : 'transparent' },
+        {
+          borderColor: colors.borderStrong,
+          backgroundColor: pressed ? colors.primarySoft : 'transparent',
+        },
       ]}>
       <AppText variant="title2" color="textSecondary">
         {signo}

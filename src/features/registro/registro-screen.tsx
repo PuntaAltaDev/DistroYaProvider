@@ -193,7 +193,12 @@ export function RegistroScreen() {
               </View>
 
               <Animated.View key={`campos-${paso}`} entering={FadeIn.delay(280).duration(400)}>
-                <Componente form={form} errores={errores} cambiar={cambiar} alTerminar={continuar} />
+                <Componente
+                  form={form}
+                  errores={errores}
+                  cambiar={cambiar}
+                  alTerminar={continuar}
+                />
               </Animated.View>
             </View>
           </ScrollView>

@@ -2,7 +2,14 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRef, useState, type ComponentRef } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, type TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  type TextInput,
+  View,
+} from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
@@ -14,7 +21,13 @@ import { haptics } from '@/lib/haptics';
 import { palette, useAppTheme } from '@/theme';
 
 import { CampoDireccion } from './campo-direccion';
-import { AJUSTE_INICIAL, necesitaAjuste, prepararImagen, recortarLogo, type AjusteLogo } from './logo';
+import {
+  AJUSTE_INICIAL,
+  necesitaAjuste,
+  prepararImagen,
+  recortarLogo,
+  type AjusteLogo,
+} from './logo';
 import { LogoEditor } from './logo-editor';
 import { formatearTamano, limpiarTelefono, type Errores, type RegistroForm } from './validacion';
 
@@ -74,7 +87,10 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
   const elegirDeGaleria = async () => {
     haptics.select();
     // Calidad 1: la foto se achica una sola vez, en `prepararImagen`.
-    const resultado = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 });
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 1,
+    });
     if (!resultado.canceled) await usarFoto(resultado.assets[0].uri);
   };
 
@@ -122,7 +138,11 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
               borderColor: colors.text,
               borderStyle: form.logoUri ? 'solid' : 'dashed',
               // Con foto, fondo blanco siempre: los logos con fondo transparente están hechos para blanco.
-              backgroundColor: pressed ? colors.primarySoft : form.logoUri ? palette.white : colors.background,
+              backgroundColor: pressed
+                ? colors.primarySoft
+                : form.logoUri
+                  ? palette.white
+                  : colors.background,
             },
           ]}>
           {procesando ? (
@@ -144,7 +164,11 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
 
         <View style={[styles.flex, { gap: spacing.xs }]}>
           <AppText variant="headline">
-            {!form.logoUri ? 'Tocá para elegir' : convieneAjustar ? 'Acomodá la foto' : 'Se ve bien.'}
+            {!form.logoUri
+              ? 'Tocá para elegir'
+              : convieneAjustar
+                ? 'Acomodá la foto'
+                : 'Se ve bien.'}
           </AppText>
           {form.logoUri ? (
             <AppText variant="footnote" color="textSecondary">

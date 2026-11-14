@@ -142,23 +142,83 @@ export const fonts = {
 } as const;
 
 /** Números del mismo ancho: fechas, teléfonos y contadores quedan alineados. */
-const tabular = ['tabular-nums'] as ('tabular-nums')[];
+const tabular = ['tabular-nums'] as 'tabular-nums'[];
 
 /**
  * Escala tipográfica. Mínimo 13px; cuerpo 15–17px con renglón de ~1,4.
  * Ningún `lineHeight` baja de 1,25 del tamaño: con menos, Android corta las colas de la "g" y la "p".
  */
 export const typography = {
-  largeTitle: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 43, letterSpacing: -0.6, fontVariant: tabular },
-  title: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 35, letterSpacing: -0.4, fontVariant: tabular },
-  title2: { fontFamily: fonts.semibold, fontSize: 22, lineHeight: 28, letterSpacing: -0.3, fontVariant: tabular },
-  headline: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 23, letterSpacing: -0.2, fontVariant: tabular },
-  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 23, letterSpacing: -0.1, fontVariant: tabular },
-  callout: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 21, letterSpacing: -0.1, fontVariant: tabular },
-  subhead: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 21, letterSpacing: 0, fontVariant: tabular },
-  footnote: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, letterSpacing: 0, fontVariant: tabular },
-  caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0, fontVariant: tabular },
-  overline: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16, letterSpacing: 2.5, fontVariant: tabular },
+  largeTitle: {
+    fontFamily: fonts.bold,
+    fontSize: 34,
+    lineHeight: 43,
+    letterSpacing: -0.6,
+    fontVariant: tabular,
+  },
+  title: {
+    fontFamily: fonts.semibold,
+    fontSize: 28,
+    lineHeight: 35,
+    letterSpacing: -0.4,
+    fontVariant: tabular,
+  },
+  title2: {
+    fontFamily: fonts.semibold,
+    fontSize: 22,
+    lineHeight: 28,
+    letterSpacing: -0.3,
+    fontVariant: tabular,
+  },
+  headline: {
+    fontFamily: fonts.semibold,
+    fontSize: 17,
+    lineHeight: 23,
+    letterSpacing: -0.2,
+    fontVariant: tabular,
+  },
+  body: {
+    fontFamily: fonts.regular,
+    fontSize: 16,
+    lineHeight: 23,
+    letterSpacing: -0.1,
+    fontVariant: tabular,
+  },
+  callout: {
+    fontFamily: fonts.medium,
+    fontSize: 15,
+    lineHeight: 21,
+    letterSpacing: -0.1,
+    fontVariant: tabular,
+  },
+  subhead: {
+    fontFamily: fonts.regular,
+    fontSize: 15,
+    lineHeight: 21,
+    letterSpacing: 0,
+    fontVariant: tabular,
+  },
+  footnote: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 0,
+    fontVariant: tabular,
+  },
+  caption: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 0,
+    fontVariant: tabular,
+  },
+  overline: {
+    fontFamily: fonts.semibold,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 2.5,
+    fontVariant: tabular,
+  },
 } as const;
 export type TypographyVariant = keyof typeof typography;
 
