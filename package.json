@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
+    "@types/jest": "30.0.0",
     "axios": "^1.21.1",
     "expo": "~58.0.25",
     "expo-auth-session": "~58.0.18",
@@ -26,6 +27,8 @@
     "expo-symbols": "~58.0.5",
     "expo-system-ui": "~58.0.7",
     "expo-web-browser": "~58.0.8",
+    "jest": "~30.5.2",
+    "jest-expo": "~58.0.14",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
@@ -55,7 +58,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "iconos": "node scripts/generar-iconos.mjs",
-    "check": "npm run typecheck && npm run lint && npm run format:check"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "private": true
 }
