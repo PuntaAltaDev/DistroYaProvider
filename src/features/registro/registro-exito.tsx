@@ -5,10 +5,11 @@ import { AppText } from '@/components/ui/app-text';
 import { Titular } from '@/components/ui/editorial';
 import { Icon } from '@/components/ui/icon';
 import { Marco } from '@/components/ui/marco';
+import { LinkAyuda } from '@/features/ayuda/link-ayuda';
 import { useAppTheme } from '@/theme';
 
 /** Pantalla final: el registro se envió y queda esperando la aprobación del administrador. */
-export function RegistroExito({ nombre }: { nombre: string }) {
+export function RegistroExito({ nombre, alAyuda }: { nombre: string; alAyuda: () => void }) {
   const { colors, spacing } = useAppTheme();
 
   return (
@@ -31,6 +32,8 @@ export function RegistroExito({ nombre }: { nombre: string }) {
         <Icon name="clock" size={18} color="primaryText" />
         <AppText variant="callout">Pendiente de aprobación</AppText>
       </Animated.View>
+
+      <LinkAyuda onPress={alAyuda} />
     </Marco>
   );
 }

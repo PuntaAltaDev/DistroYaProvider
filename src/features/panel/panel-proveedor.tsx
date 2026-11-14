@@ -4,6 +4,7 @@ import { AjustesScreen } from '@/features/ajustes/ajustes-screen';
 import { avisosDe, sinLeer } from '@/features/avisos/avisos';
 import { AvisosScreen } from '@/features/avisos/avisos-screen';
 import { PermisoAvisosScreen } from '@/features/avisos/permiso-avisos-screen';
+import { AyudaScreen } from '@/features/ayuda/ayuda-screen';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import {
   aGuardada,
@@ -24,7 +25,8 @@ import { InicioScreen } from './inicio-screen';
 import { ListaScreen } from './lista-screen';
 import { PerfilScreen } from './perfil-screen';
 
-type Pantalla = 'inicio' | 'perfil' | 'plan' | 'planes' | 'lista' | 'avisos' | 'ajustes';
+type Pantalla =
+  'inicio' | 'perfil' | 'plan' | 'planes' | 'lista' | 'avisos' | 'ajustes' | 'ayuda-plan';
 
 /** Lo que dice "Mi plan" en el inicio. */
 function detallePlan(suscripcion: Suscripcion | undefined) {
@@ -100,6 +102,7 @@ export function PanelProveedor() {
       <SuscripcionScreen
         suscripcion={suscripcion}
         alRenovar={() => setPantalla('planes')}
+        alAyuda={() => setPantalla('ayuda-plan')}
         alVolver={volver}
       />
     );
@@ -122,6 +125,9 @@ export function PanelProveedor() {
     return (
       <ListaScreen actual={lista} historial={historial} alSubir={subirLista} alVolver={volver} />
     );
+  }
+  if (pantalla === 'ayuda-plan') {
+    return <AyudaScreen alVolver={() => setPantalla('plan')} />;
   }
   if (pantalla === 'avisos') {
     return (
@@ -168,7 +174,7 @@ export function PanelProveedor() {
         },
         {
           titulo: 'Ajustes',
-          detalle: 'Apariencia, avisos, cuenta y legal',
+          detalle: 'Apariencia, avisos, cuenta, ayuda y legal',
           onPress: () => setPantalla('ajustes'),
         },
       ]}

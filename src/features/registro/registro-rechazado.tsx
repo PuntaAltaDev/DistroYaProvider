@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { Titular } from '@/components/ui/editorial';
 import { Marco } from '@/components/ui/marco';
+import { LinkAyuda } from '@/features/ayuda/link-ayuda';
 import { useAppTheme } from '@/theme';
 
 type RegistroRechazadoProps = {
@@ -11,10 +12,11 @@ type RegistroRechazadoProps = {
   motivo: string;
   /** Vuelve al registro con los datos cargados, para corregir y reenviar. */
   alCorregir: () => void;
+  alAyuda: () => void;
 };
 
 /** El administrador no aprobó el perfil: qué hay que corregir y el botón para hacerlo. */
-export function RegistroRechazado({ nombre, motivo, alCorregir }: RegistroRechazadoProps) {
+export function RegistroRechazado({ nombre, motivo, alCorregir, alAyuda }: RegistroRechazadoProps) {
   const { colors, spacing } = useAppTheme();
 
   return (
@@ -40,6 +42,8 @@ export function RegistroRechazado({ nombre, motivo, alCorregir }: RegistroRechaz
         </AppText>
         <AppText variant="callout">{motivo}</AppText>
       </Animated.View>
+
+      <LinkAyuda onPress={alAyuda} />
     </Marco>
   );
 }

@@ -6,6 +6,7 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
 import { permitirAvisos } from '@/features/avisos/avisos';
+import { AyudaScreen } from '@/features/ayuda/ayuda-screen';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
@@ -26,12 +27,15 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
   const { cuenta, actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
-  const [legal, setLegal] = useState<DocumentoLegal>();
+  /** Pantalla que se abre encima: la ayuda o un documento legal. */
+  const [abierta, setAbierta] = useState<DocumentoLegal | 'ayuda'>();
   /** El teléfono tiene los avisos bloqueados: se ofrece ir a sus ajustes. */
   const [bloqueados, setBloqueados] = useState(false);
   const avisosActivos = !!cuenta.avisos?.activos;
 
-  if (legal) return <LegalScreen documento={legal} alVolver={() => setLegal(undefined)} />;
+  const cerrar = () => setAbierta(undefined);
+  if (abierta === 'ayuda') return <AyudaScreen alVolver={cerrar} />;
+  if (abierta) return <LegalScreen documento={abierta} alVolver={cerrar} />;
 
   const cerrarSesion = () => {
     haptics.tap();
@@ -109,9 +113,10 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
         <Fila etiqueta="Eliminar cuenta" color="danger" onPress={() => setConfirmando(true)} />
       </Grupo>
 
-      <Grupo titulo="LEGAL" orden={3}>
-        <Fila etiqueta="Términos y condiciones" flecha onPress={() => setLegal('terminos')} />
-        <Fila etiqueta="Política de privacidad" flecha onPress={() => setLegal('privacidad')} />
+      <Grupo titulo="AYUDA Y LEGAL" orden={3}>
+        <Fila etiqueta="Ayuda y contacto" flecha onPress={() => setAbierta('ayuda')} />
+        <Fila etiqueta="Términos y condiciones" flecha onPress={() => setAbierta('terminos')} />
+        <Fila etiqueta="Política de privacidad" flecha onPress={() => setAbierta('privacidad')} />
       </Grupo>
 
       <BottomSheet

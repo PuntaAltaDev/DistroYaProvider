@@ -12,6 +12,7 @@ import Animated, {
 import { AppText } from '@/components/ui/app-text';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
+import { LinkAyuda } from '@/features/ayuda/link-ayuda';
 import { fonts, useAppTheme } from '@/theme';
 
 import {
@@ -34,11 +35,17 @@ type SuscripcionScreenProps = {
   suscripcion: Suscripcion;
   /** Abre los planes para renovar, extender o cambiar. */
   alRenovar: () => void;
+  alAyuda: () => void;
   alVolver: () => void;
 };
 
 /** Estado de la suscripción del proveedor: qué plan tiene, cuándo vence (EndDate) y renovarlo. */
-export function SuscripcionScreen({ suscripcion, alRenovar, alVolver }: SuscripcionScreenProps) {
+export function SuscripcionScreen({
+  suscripcion,
+  alRenovar,
+  alAyuda,
+  alVolver,
+}: SuscripcionScreenProps) {
   const { colors, spacing, motion } = useAppTheme();
 
   const estado = estadoDe(suscripcion);
@@ -100,6 +107,8 @@ export function SuscripcionScreen({ suscripcion, alRenovar, alVolver }: Suscripc
           {estado === 'por-vencer' ? ' Renovalo a tiempo para seguir apareciendo.' : ''}
         </AppText>
       </Animated.View>
+
+      <LinkAyuda onPress={alAyuda} />
     </Marco>
   );
 }
