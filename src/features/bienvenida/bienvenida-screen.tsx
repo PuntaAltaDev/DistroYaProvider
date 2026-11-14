@@ -72,7 +72,7 @@ export function BienvenidaScreen({ alEmpezar }: BienvenidaScreenProps) {
       </SafeAreaView>
 
       <View style={styles.column}>
-        <ActionBar label="Empezar" onPress={alEmpezar} invitar />
+        <ActionBar label="Empezar" onPress={alEmpezar} />
       </View>
     </View>
   );

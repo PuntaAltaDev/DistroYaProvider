@@ -23,39 +23,48 @@ type ActionBarProps = {
   label: string;
   onPress: () => void;
   loading?: boolean;
-  /** La flecha se adelanta un poco cada tanto, para invitar a tocar. Solo en pantallas de entrada. */
-  invitar?: boolean;
 };
 
-/** Pausa entre cada empujoncito de la flecha. */
+/** Espera antes del primer empujoncito y pausa entre uno y otro. */
+const ESPERA_INVITAR_MS = 1600;
 const PAUSA_INVITAR_MS = 2600;
 
 /**
  * Barra negra de acción, pegada al borde inferior (estilo editorial).
- * Toda la barra es el botón. La flecha se corre un poco al tocar.
+ * Toda la barra es el botón. La flecha se adelanta un poco cada tanto, para invitar a tocar,
+ * y se corre al tocar. Si el teléfono pide menos movimiento, solo se mueve al tocar.
  */
-export function ActionBar({ label, onPress, loading = false, invitar = false }: ActionBarProps) {
+export function ActionBar({ label, onPress, loading = false }: ActionBarProps) {
   const { colors, spacing, motion } = useAppTheme();
   const insets = useSafeAreaInsets();
   const reducir = useReducedMotion();
   const empuje = useSharedValue(0);
 
-  useEffect(() => {
-    if (!invitar || reducir) return;
-    empuje.set(
-      withDelay(
-        1600,
-        withRepeat(
-          withSequence(
-            withTiming(7, { duration: 220, easing: Easing.out(Easing.quad) }),
-            withSpring(0, motion.spring.snappy),
-            withDelay(PAUSA_INVITAR_MS, withTiming(0, { duration: 0 })),
-          ),
-          -1,
+  /** Empujoncito que se repite mientras la barra está a la vista. */
+  const invitar = () =>
+    withDelay(
+      ESPERA_INVITAR_MS,
+      withRepeat(
+        withSequence(
+          withTiming(7, { duration: 220, easing: Easing.out(Easing.quad) }),
+          withSpring(0, motion.spring.snappy),
+          withDelay(PAUSA_INVITAR_MS, withTiming(0, { duration: 0 })),
         ),
+        -1,
       ),
     );
-  }, [invitar, reducir, empuje, motion.spring.snappy]);
+
+  useEffect(() => {
+    if (!reducir) empuje.set(invitar());
+    // `invitar` solo arma la animación; alcanza con volver a empezar si cambia `reducir`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducir, empuje]);
+
+  /** Al soltar, vuelve a su lugar y retoma la invitación (al tocar, la animación se corta). */
+  const soltar = () => {
+    const volver = withSpring(0, motion.spring.snappy);
+    empuje.set(reducir ? volver : withSequence(volver, invitar()));
+  };
 
   const flechaStyle = useAnimatedStyle(() => ({ transform: [{ translateX: empuje.get() }] }));
 
@@ -65,7 +74,7 @@ export function ActionBar({ label, onPress, loading = false, invitar = false }: 
       accessibilityState={{ disabled: loading, busy: loading }}
       disabled={loading}
       onPressIn={() => empuje.set(withSpring(8, motion.spring.snappy))}
-      onPressOut={() => empuje.set(withSpring(0, motion.spring.snappy))}
+      onPressOut={soltar}
       onPress={() => {
         haptics.tap();
         onPress();
