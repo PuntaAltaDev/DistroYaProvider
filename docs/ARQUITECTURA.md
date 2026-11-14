@@ -77,6 +77,8 @@ Cosas que hoy no cumplen las reglas de arriba y se van a ordenar en su propio PR
 
 ## Decisiones
 
+- **Identificador de la app: `com.puntaaltadev.distroya.proveedor`** (iOS y Android). Una vez publicada en las tiendas no se puede cambiar. El ícono, la imagen de la pantalla de inicio y el ícono de iOS siguen siendo los de la plantilla de Expo hasta que estén los de la marca.
+
 - **Logo en WebP, 512 px.** Pesa poco y conserva la transparencia. Hay que confirmar con Seba que el backend lo acepta.
 - **La dirección sale de la lista de Google.** Así siempre queda la localidad y la provincia, y se guardan las coordenadas para buscar proveedores cerca.
 - **La foto se mueve y se agranda dentro del círculo** en lugar de recortarse sola: solo el proveedor sabe qué parte quiere mostrar.
