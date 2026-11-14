@@ -203,7 +203,6 @@ export function RegistroScreen() {
           <ActionBar
             label={esUltimo ? 'Enviar registro' : 'Siguiente'}
             loading={enviando}
-            progress={(paso + 1) / total}
             onPress={continuar}
           />
         </View>

@@ -111,14 +111,15 @@ const dark: AppColors = {
   textSecondary: palette.slate300,
   textMuted: palette.slate400,
 
-  primary: palette.lime,
-  primaryPressed: palette.lime,
+  primary: palette.teal400,
+  primaryPressed: palette.teal500,
   onPrimary: palette.deep900,
   primarySoft: palette.deep800,
   primaryText: palette.teal400,
   accent: palette.teal400,
 
-  actionBg: palette.lime,
+  /** Turquesa, el mismo verde de la frase de acento. */
+  actionBg: palette.teal400,
   actionText: palette.deep900,
   actionAccent: palette.deep900,
 
