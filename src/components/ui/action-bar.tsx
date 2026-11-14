@@ -1,5 +1,16 @@
+import { useEffect } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { haptics } from '@/lib/haptics';
@@ -12,16 +23,39 @@ type ActionBarProps = {
   label: string;
   onPress: () => void;
   loading?: boolean;
+  /** La flecha se adelanta un poco cada tanto, para invitar a tocar. Solo en pantallas de entrada. */
+  invitar?: boolean;
 };
+
+/** Pausa entre cada empujoncito de la flecha. */
+const PAUSA_INVITAR_MS = 2600;
 
 /**
  * Barra negra de acción, pegada al borde inferior (estilo editorial).
  * Toda la barra es el botón. La flecha se corre un poco al tocar.
  */
-export function ActionBar({ label, onPress, loading = false }: ActionBarProps) {
+export function ActionBar({ label, onPress, loading = false, invitar = false }: ActionBarProps) {
   const { colors, spacing, motion } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const reducir = useReducedMotion();
   const empuje = useSharedValue(0);
+
+  useEffect(() => {
+    if (!invitar || reducir) return;
+    empuje.set(
+      withDelay(
+        1600,
+        withRepeat(
+          withSequence(
+            withTiming(7, { duration: 220, easing: Easing.out(Easing.quad) }),
+            withSpring(0, motion.spring.snappy),
+            withDelay(PAUSA_INVITAR_MS, withTiming(0, { duration: 0 })),
+          ),
+          -1,
+        ),
+      ),
+    );
+  }, [invitar, reducir, empuje, motion.spring.snappy]);
 
   const flechaStyle = useAnimatedStyle(() => ({ transform: [{ translateX: empuje.get() }] }));
 

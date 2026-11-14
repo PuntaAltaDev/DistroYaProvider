@@ -5,9 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
 import { BarraSuperior } from '@/components/ui/editorial';
-import { Logo } from '@/components/ui/logo';
 import { fonts, useAppTheme } from '@/theme';
 import { palette } from '@/theme/tokens';
+
+import { LineaQueSeDibuja, LogoAnimado } from './animaciones';
 
 /** Lo que va a pasar, en tres líneas. */
 const PUNTOS = ['Armá tu perfil', 'Subí la lista de precios', 'Te encuentran por rubro'];
@@ -29,7 +30,10 @@ export function BienvenidaScreen({ alEmpezar }: BienvenidaScreenProps) {
           <View style={[styles.marca, { gap: spacing.lg }]}>
             <Animated.View entering={FadeIn.duration(500)}>
               {/* En oscuro el cuadrado va un poco más claro que el fondo para que se note. */}
-              <Logo size={96} fondo={scheme === 'dark' ? palette.deep800 : palette.deep900} />
+              <LogoAnimado
+                size={96}
+                fondo={scheme === 'dark' ? palette.deep800 : palette.deep900}
+              />
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(200).duration(450)} style={styles.textos}>
@@ -46,33 +50,29 @@ export function BienvenidaScreen({ alEmpezar }: BienvenidaScreenProps) {
           </View>
 
           <View style={{ marginTop: spacing.xl }}>
+            {/* Las líneas se dibujan de izquierda a derecha, una tras otra, mientras entran los pasos. */}
+            <LineaQueSeDibuja demora={380} />
             {PUNTOS.map((punto, i) => (
-              <Animated.View
-                key={punto}
-                entering={FadeInDown.delay(380 + i * 80).duration(400)}
-                style={[
-                  styles.fila,
-                  {
-                    gap: spacing.lg,
-                    paddingVertical: spacing.lg,
-                    borderColor: colors.border,
-                    borderTopWidth: i === 0 ? StyleSheet.hairlineWidth : 0,
-                  },
-                ]}>
-                <AppText style={[styles.numero, { color: colors.primaryText }]}>
-                  {String(i + 1).padStart(2, '0')}
-                </AppText>
-                <AppText variant="headline" style={styles.texto}>
-                  {punto}
-                </AppText>
-              </Animated.View>
+              <View key={punto}>
+                <Animated.View
+                  entering={FadeInDown.delay(380 + i * 80).duration(400)}
+                  style={[styles.fila, { gap: spacing.lg, paddingVertical: spacing.lg }]}>
+                  <AppText style={[styles.numero, { color: colors.primaryText }]}>
+                    {String(i + 1).padStart(2, '0')}
+                  </AppText>
+                  <AppText variant="headline" style={styles.texto}>
+                    {punto}
+                  </AppText>
+                </Animated.View>
+                <LineaQueSeDibuja demora={460 + i * 120} />
+              </View>
             ))}
           </View>
         </View>
       </SafeAreaView>
 
       <View style={styles.column}>
-        <ActionBar label="Empezar" onPress={alEmpezar} />
+        <ActionBar label="Empezar" onPress={alEmpezar} invitar />
       </View>
     </View>
   );
@@ -86,11 +86,7 @@ const styles = StyleSheet.create({
   marca: { alignItems: 'center' },
   textos: { alignItems: 'center', gap: 8 },
   centrado: { textAlign: 'center' },
-  fila: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
+  fila: { flexDirection: 'row', alignItems: 'center' },
   numero: {
     fontFamily: fonts.regular,
     fontSize: 17,
