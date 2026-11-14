@@ -8,6 +8,7 @@ import { Titular } from '@/components/ui/editorial';
 import { LineField } from '@/components/ui/line-field';
 import { Marco } from '@/components/ui/marco';
 import type { DocumentoLegal } from '@/features/legal/textos';
+import { useAtras } from '@/lib/atras';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -68,6 +69,9 @@ export function EntradaScreen({
     setCodigo('');
     setError(undefined);
   };
+
+  // Con el código a la vista, el "atrás" de Android también vuelve al email.
+  useAtras(enviado ? cambiarEmail : undefined);
 
   return (
     <Marco

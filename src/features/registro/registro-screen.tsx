@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
+import { useAtras } from '@/lib/atras';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -109,6 +110,10 @@ export function RegistroScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
+  /** Al paso anterior. En el primero no hay: el "atrás" de Android sale de la app. */
+  const anterior = paso > 0 ? () => irA(paso - 1) : undefined;
+  useAtras(anterior);
+
   const continuar = () => {
     const encontrados = validarPaso(id, form);
     if (Object.keys(encontrados).length > 0) {
@@ -141,7 +146,7 @@ export function RegistroScreen() {
         <SafeAreaView edges={['top']} style={styles.column}>
           <BarraSuperior
             derecha={`${dosCifras(paso + 1)} / ${dosCifras(total)}`}
-            alVolver={paso > 0 ? () => irA(paso - 1) : undefined}
+            alVolver={anterior}
             progreso={(paso + 1) / total}
           />
 
