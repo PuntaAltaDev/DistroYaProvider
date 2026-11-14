@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -8,8 +8,10 @@ import { Icon } from '@/components/ui/icon';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
+import { LegalScreen } from '@/features/legal/legal-screen';
+import type { DocumentoLegal } from '@/features/legal/textos';
 import { haptics } from '@/lib/haptics';
-import { useAppTheme, type ThemeMode } from '@/theme';
+import { useAppTheme, type AppColors, type ThemeMode } from '@/theme';
 
 const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
   { valor: 'light', etiqueta: 'Claro' },
@@ -17,12 +19,15 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
   { valor: 'system', etiqueta: 'Como el teléfono' },
 ];
 
-/** Ajustes del proveedor: cómo se ve la app y su cuenta. */
+/** Ajustes del proveedor: cómo se ve la app, su cuenta y lo legal. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
-  const { colors, spacing, mode, setMode } = useAppTheme();
+  const { spacing, mode, setMode } = useAppTheme();
   const { actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [legal, setLegal] = useState<DocumentoLegal>();
+
+  if (legal) return <LegalScreen documento={legal} alVolver={() => setLegal(undefined)} />;
 
   const cerrarSesion = () => {
     haptics.tap();
@@ -43,49 +48,33 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
     <Marco derecha="AJUSTES" alVolver={alVolver}>
       <Titular lineas={['Tus']} acento="ajustes." clave="ajustes" />
 
-      <Animated.View entering={FadeInDown.delay(200).duration(400)} style={{ gap: spacing.sm }}>
-        <AppText variant="overline" color="textSecondary">
-          APARIENCIA
-        </AppText>
-        <View style={[styles.grupo, { borderTopColor: colors.border }]}>
-          {MODOS.map((opcion) => (
-            <Pressable
-              key={opcion.valor}
-              onPress={() => {
-                haptics.select();
-                setMode(opcion.valor);
-              }}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: mode === opcion.valor }}
-              style={[styles.fila, { borderBottomColor: colors.border }]}>
-              <AppText variant="body">{opcion.etiqueta}</AppText>
-              {mode === opcion.valor ? <Icon name="check" size={20} color="primaryText" /> : null}
-            </Pressable>
-          ))}
-        </View>
-      </Animated.View>
+      <Grupo titulo="APARIENCIA" orden={0}>
+        {MODOS.map((opcion) => (
+          <Fila
+            key={opcion.valor}
+            etiqueta={opcion.etiqueta}
+            rol="radio"
+            seleccionada={mode === opcion.valor}
+            onPress={() => {
+              haptics.select();
+              setMode(opcion.valor);
+            }}
+            derecha={
+              mode === opcion.valor ? <Icon name="check" size={20} color="primaryText" /> : null
+            }
+          />
+        ))}
+      </Grupo>
 
-      <Animated.View entering={FadeInDown.delay(280).duration(400)} style={{ gap: spacing.sm }}>
-        <AppText variant="overline" color="textSecondary">
-          CUENTA
-        </AppText>
-        <View style={[styles.grupo, { borderTopColor: colors.border }]}>
-          <Pressable
-            onPress={cerrarSesion}
-            accessibilityRole="button"
-            style={[styles.fila, { borderBottomColor: colors.border }]}>
-            <AppText variant="body">Cerrar sesión</AppText>
-          </Pressable>
-          <Pressable
-            onPress={() => setConfirmando(true)}
-            accessibilityRole="button"
-            style={[styles.fila, { borderBottomColor: colors.border }]}>
-            <AppText variant="body" color="danger">
-              Eliminar cuenta
-            </AppText>
-          </Pressable>
-        </View>
-      </Animated.View>
+      <Grupo titulo="CUENTA" orden={1}>
+        <Fila etiqueta="Cerrar sesión" onPress={cerrarSesion} />
+        <Fila etiqueta="Eliminar cuenta" color="danger" onPress={() => setConfirmando(true)} />
+      </Grupo>
+
+      <Grupo titulo="LEGAL" orden={2}>
+        <Fila etiqueta="Términos y condiciones" flecha onPress={() => setLegal('terminos')} />
+        <Fila etiqueta="Política de privacidad" flecha onPress={() => setLegal('privacidad')} />
+      </Grupo>
 
       <BottomSheet
         visible={confirmando}
@@ -115,6 +104,65 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
         </View>
       </BottomSheet>
     </Marco>
+  );
+}
+
+/** Un bloque de filas con su título. `orden` escalona la animación de entrada. */
+function Grupo({
+  titulo,
+  orden,
+  children,
+}: {
+  titulo: string;
+  orden: number;
+  children: ReactNode;
+}) {
+  const { colors, spacing } = useAppTheme();
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(200 + orden * 80).duration(400)}
+      style={{ gap: spacing.sm }}>
+      <AppText variant="overline" color="textSecondary">
+        {titulo}
+      </AppText>
+      <View style={[styles.grupo, { borderTopColor: colors.border }]}>{children}</View>
+    </Animated.View>
+  );
+}
+
+type FilaProps = {
+  etiqueta: string;
+  onPress: () => void;
+  color?: keyof AppColors;
+  /** Lleva una flecha: abre otra pantalla. */
+  flecha?: boolean;
+  /** Lo que va a la derecha (un tilde, un interruptor). */
+  derecha?: ReactNode;
+  rol?: 'button' | 'radio';
+  seleccionada?: boolean;
+};
+
+function Fila({
+  etiqueta,
+  onPress,
+  color = 'text',
+  flecha,
+  derecha,
+  rol = 'button',
+  seleccionada,
+}: FilaProps) {
+  const { colors } = useAppTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole={rol}
+      accessibilityState={rol === 'radio' ? { selected: seleccionada } : undefined}
+      style={[styles.fila, { borderBottomColor: colors.border }]}>
+      <AppText variant="body" color={color}>
+        {etiqueta}
+      </AppText>
+      {flecha ? <Icon name="forward" size={18} color="textSecondary" /> : derecha}
+    </Pressable>
   );
 }
 

@@ -7,6 +7,7 @@ import { BotonGoogle } from '@/components/ui/boton-google';
 import { Titular } from '@/components/ui/editorial';
 import { LineField } from '@/components/ui/line-field';
 import { Marco } from '@/components/ui/marco';
+import type { DocumentoLegal } from '@/features/legal/textos';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -15,6 +16,8 @@ import { emailValido, LARGO_CODIGO, limpiarEmail } from './validacion';
 
 type EntradaScreenProps = {
   alVolver: () => void;
+  /** Abre los términos o la política de privacidad. */
+  alVerLegal: (documento: DocumentoLegal) => void;
   /** Acá va a ir el inicio de sesión con Google. */
   alGoogle: () => void;
   /** Acá va a ir el pedido del código a la API de Seba. */
@@ -29,6 +32,7 @@ type EntradaScreenProps = {
  */
 export function EntradaScreen({
   alVolver,
+  alVerLegal,
   alGoogle,
   alEnviarCodigo,
   alConfirmar,
@@ -126,6 +130,26 @@ export function EntradaScreen({
         )}
 
         <BotonGoogle onPress={alGoogle} />
+
+        <AppText variant="footnote" color="textSecondary">
+          Al continuar aceptás los{' '}
+          <AppText
+            variant="footnote"
+            color="primaryText"
+            accessibilityRole="link"
+            onPress={() => alVerLegal('terminos')}>
+            Términos
+          </AppText>{' '}
+          y la{' '}
+          <AppText
+            variant="footnote"
+            color="primaryText"
+            accessibilityRole="link"
+            onPress={() => alVerLegal('privacidad')}>
+            Política de privacidad
+          </AppText>
+          .
+        </AppText>
       </Animated.View>
     </Marco>
   );

@@ -22,6 +22,8 @@ export type Cuenta = {
   metodo?: MetodoAcceso;
   /** Email con el que entró. Con Google todavía no se conoce: lo va a dar la API. */
   email?: string;
+  /** Qué versión de los términos y la privacidad aceptó, y cuándo (ISO). Ver `features/legal`. */
+  terminos?: { version: string; fecha: string };
   estado: EstadoCuenta;
   /** Pantalla del registro en la que quedó (empieza en 0). */
   paso: number;
@@ -58,6 +60,10 @@ export async function cargarCuenta(): Promise<Cuenta> {
     metodo:
       guardada.metodo === 'email' || guardada.metodo === 'google' ? guardada.metodo : undefined,
     email: typeof guardada.email === 'string' ? guardada.email : undefined,
+    terminos:
+      typeof guardada.terminos?.version === 'string' && typeof guardada.terminos.fecha === 'string'
+        ? guardada.terminos
+        : undefined,
     estado,
     paso,
     form,
