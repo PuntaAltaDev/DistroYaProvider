@@ -9,6 +9,7 @@ import Animated, {
 
 import { AppText } from '@/components/ui/app-text';
 import { Icon } from '@/components/ui/icon';
+import { VolverAlInicio } from '@/components/ui/volver-al-inicio';
 import { fonts, useAppTheme } from '@/theme';
 
 type BarraSuperiorProps = {
@@ -62,6 +63,7 @@ export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProp
           </AppText>
         </View>
         <View style={[styles.fila, { gap: spacing.lg }]}>
+          <VolverAlInicio />
           <CambioDeModo />
           <AppText variant="caption" style={styles.derecha}>
             {derecha}
