@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
-import { BarraSuperior } from '@/features/registro/editorial';
+import { BarraSuperior } from '@/components/ui/editorial';
 import { useAppTheme } from '@/theme';
 
 type MarcoProps = {

@@ -10,8 +10,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
-import { Marco } from '@/features/panel/marco';
-import { Titular } from '@/features/registro/editorial';
+import { Marco } from '@/components/ui/marco';
+import { Titular } from '@/components/ui/editorial';
 import { fonts, useAppTheme } from '@/theme';
 
 import {

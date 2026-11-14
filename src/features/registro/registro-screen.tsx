@@ -9,7 +9,7 @@ import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
-import { BarraSuperior, Titular } from './editorial';
+import { BarraSuperior, Titular } from '@/components/ui/editorial';
 import {
   PasoCatalogo,
   PasoContacto,

@@ -18,7 +18,8 @@ Cómo está organizado el código de DistroYa Proveedores y las reglas que se si
 ```
 src/
   app/            Rutas. Cada archivo es una pantalla y solo arma la pantalla de features/.
-  components/ui/  Piezas reutilizables sin lógica de negocio (texto, campo, chip, ícono, barra de acción).
+  components/ui/  Piezas reutilizables sin lógica de negocio: texto, campo, chip, ícono, barra de acción,
+                  barra superior y titular (editorial) y marco de pantalla (marco).
   features/       Una carpeta por tema de negocio, con sus pantallas y su lógica.
     registro/     Alta del proveedor: pasos, validación, logo y dirección.
     panel/        Lo que ve el proveedor ya aprobado: inicio, perfil y lista de precios.
@@ -67,11 +68,8 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 
 ## Deudas conocidas
 
-Cosas que hoy no cumplen las reglas de arriba y se van a ordenar en su propio PR:
+Cosas que hoy no cumplen del todo las reglas de arriba:
 
-- `features/registro/editorial.tsx` (barra superior y titular) lo usan también `panel` y `suscripcion`: tiene que pasar a `components/ui/`.
-- `features/panel/marco.tsx` (esqueleto de pantalla) lo usa `suscripcion`, y `panel` usa a `suscripcion`: hay un ciclo. También pasa a `components/ui/`.
-- `features/ajustes` también usa `panel/marco` y `registro/editorial` (mismo caso que arriba).
 - `cuenta` guarda el formulario de `registro` y `registro` usa a `cuenta`: no hay ciclo de archivos, pero las dos carpetas se necesitan entre sí.
 - Las pantallas no tienen pruebas automáticas todavía.
 

@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { LineField } from '@/components/ui/line-field';
 import { CampoDireccion } from '@/features/registro/campo-direccion';
-import { Titular } from '@/features/registro/editorial';
+import { Titular } from '@/components/ui/editorial';
 import { PasoLogo, PasoRubros } from '@/features/registro/pasos';
 import {
   limpiarTelefono,
@@ -16,7 +16,7 @@ import {
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
-import { Marco } from './marco';
+import { Marco } from '@/components/ui/marco';
 
 type PerfilScreenProps = {
   form: RegistroForm;

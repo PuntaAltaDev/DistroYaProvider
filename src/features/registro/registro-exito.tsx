@@ -7,7 +7,7 @@ import { AppText } from '@/components/ui/app-text';
 import { Icon } from '@/components/ui/icon';
 import { useAppTheme } from '@/theme';
 
-import { BarraSuperior, Titular } from './editorial';
+import { BarraSuperior, Titular } from '@/components/ui/editorial';
 
 type RegistroExitoProps = {
   nombre: string;

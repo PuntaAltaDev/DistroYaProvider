@@ -6,8 +6,8 @@ import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
-import { Marco } from '@/features/panel/marco';
-import { Titular } from '@/features/registro/editorial';
+import { Marco } from '@/components/ui/marco';
+import { Titular } from '@/components/ui/editorial';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme, type ThemeMode } from '@/theme';
 

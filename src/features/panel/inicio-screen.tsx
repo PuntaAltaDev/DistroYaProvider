@@ -4,10 +4,10 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { Icon } from '@/components/ui/icon';
 import { haptics } from '@/lib/haptics';
-import { Titular } from '@/features/registro/editorial';
+import { Titular } from '@/components/ui/editorial';
 import { fonts, useAppTheme } from '@/theme';
 
-import { Marco } from './marco';
+import { Marco } from '@/components/ui/marco';
 
 export type Acceso = {
   titulo: string;

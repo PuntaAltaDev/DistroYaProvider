@@ -1,10 +1,10 @@
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Titular } from '@/features/registro/editorial';
+import { Titular } from '@/components/ui/editorial';
 import type { ArchivoLista } from '@/features/suscripcion/datos';
 import { ListaDePrecios } from '@/features/suscripcion/lista-precios';
 
-import { Marco } from './marco';
+import { Marco } from '@/components/ui/marco';
 
 type ListaScreenProps = {
   actual?: ArchivoLista;
