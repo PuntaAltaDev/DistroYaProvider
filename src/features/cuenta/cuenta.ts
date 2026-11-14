@@ -13,6 +13,8 @@ import { FORM_INICIAL, type RegistroForm } from '@/features/registro/validacion'
 export type EstadoCuenta = 'borrador' | 'pendiente' | 'aprobado';
 
 export type Cuenta = {
+  /** Ya tocó "Comenzar" en la pantalla de bienvenida. */
+  iniciada: boolean;
   estado: EstadoCuenta;
   /** Pantalla del registro en la que quedó (empieza en 0). */
   paso: number;
@@ -21,7 +23,12 @@ export type Cuenta = {
   fechaEnvio?: string;
 };
 
-export const CUENTA_INICIAL: Cuenta = { estado: 'borrador', paso: 0, form: FORM_INICIAL };
+export const CUENTA_INICIAL: Cuenta = {
+  iniciada: false,
+  estado: 'borrador',
+  paso: 0,
+  form: FORM_INICIAL,
+};
 
 /** La "v1" permite cambiar la forma de los datos más adelante sin romper lo ya guardado. */
 const CLAVE = 'cuenta.v1';
@@ -32,11 +39,18 @@ export async function cargarCuenta(): Promise<Cuenta> {
   const guardada = await leer<Partial<Cuenta>>(CLAVE);
   if (!guardada?.estado || !ESTADOS.includes(guardada.estado)) return CUENTA_INICIAL;
 
+  const estado = guardada.estado;
+  const paso = Number.isInteger(guardada.paso) ? Math.max(0, guardada.paso as number) : 0;
+  // Si el formulario ganó campos nuevos desde que se guardó, quedan con su valor inicial.
+  const form = { ...FORM_INICIAL, ...guardada.form };
+
   return {
-    estado: guardada.estado,
-    paso: Number.isInteger(guardada.paso) ? Math.max(0, guardada.paso as number) : 0,
-    // Si el formulario ganó campos nuevos desde que se guardó, quedan con su valor inicial.
-    form: { ...FORM_INICIAL, ...guardada.form },
+    // Lo guardado antes de que existiera la bienvenida no trae este dato: si ya hay avance,
+    // se da por iniciada para no mostrarle la bienvenida a alguien que ya empezó.
+    iniciada: guardada.iniciada ?? (estado !== 'borrador' || paso > 0 || !!form.razonSocial.trim()),
+    estado,
+    paso,
+    form,
     fechaEnvio: guardada.fechaEnvio,
   };
 }

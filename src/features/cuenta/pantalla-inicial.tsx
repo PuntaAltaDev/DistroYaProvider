@@ -1,3 +1,4 @@
+import { BienvenidaScreen } from '@/features/bienvenida/bienvenida-screen';
 import { PanelProveedor } from '@/features/panel/panel-proveedor';
 import { RegistroExito } from '@/features/registro/registro-exito';
 import { RegistroScreen } from '@/features/registro/registro-screen';
@@ -19,6 +20,10 @@ export function PantallaInicial() {
         alRevisar={() => actualizar({ estado: 'aprobado' })}
       />
     );
+  }
+
+  if (!cuenta.iniciada) {
+    return <BienvenidaScreen alComenzar={() => actualizar({ iniciada: true })} />;
   }
 
   return <RegistroScreen />;
