@@ -52,6 +52,8 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
   const [procesando, setProcesando] = useState(false);
   const [ajustando, setAjustando] = useState(false);
   const [error, setError] = useState<string>();
+  /** La foto está guardada pero no se puede mostrar (el archivo ya no está). */
+  const [noCarga, setNoCarga] = useState(false);
 
   /** Achica la foto y arma el logo con la parte del centro. Después se puede acomodar. */
   const usarFoto = async (uri: string) => {
@@ -125,7 +127,15 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
           {procesando ? (
             <ActivityIndicator color={colors.primaryText} />
           ) : form.logoUri ? (
-            <Image source={{ uri: form.logoUri }} style={styles.logoImagen} contentFit="cover" />
+            <Image
+              // La clave cambia con la foto: si no, se muestra la imagen vieja que la app tenía guardada.
+              key={form.logoUri}
+              source={{ uri: form.logoUri }}
+              style={styles.logoImagen}
+              contentFit="cover"
+              onError={() => setNoCarga(true)}
+              onLoad={() => setNoCarga(false)}
+            />
           ) : (
             <Icon name="camera" size={32} />
           )}
@@ -153,10 +163,10 @@ export function PasoLogo({ form, cambiar }: PasoProps) {
         </View>
       </View>
 
-      {error ? (
+      {error || noCarga ? (
         <Animated.View entering={FadeInDown.duration(250)}>
           <AppText variant="footnote" color="danger">
-            {error}
+            {error ?? 'No pudimos mostrar la foto. Elegí otra.'}
           </AppText>
         </Animated.View>
       ) : null}

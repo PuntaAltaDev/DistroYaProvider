@@ -1,4 +1,6 @@
+import { Directory, File, Paths } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { Platform } from 'react-native';
 
 /** La foto que eligió el proveedor, ya achicada, con su tamaño en píxeles. */
 export type ImagenLogo = { uri: string; width: number; height: number };
@@ -16,6 +18,35 @@ export const ESCALA_MAX = 4;
 const LADO_TRABAJO = 1600;
 /** Lado del logo que se envía. */
 const LADO_FINAL = 512;
+/** Carpeta propia dentro de los documentos de la app. */
+const CARPETA = 'logo';
+
+const enWeb = Platform.OS === 'web';
+
+/**
+ * Saca el archivo del caché y lo deja en una carpeta de la app.
+ * El caché lo puede vaciar el teléfono cuando se queda sin lugar, y ahí la foto desaparece.
+ * El nombre lleva la hora para que la app no muestre la imagen vieja que tenía guardada.
+ */
+function guardarAparte(uri: string, prefijo: string) {
+  // En la web no hay sistema de archivos: la dirección que devuelve el navegador ya sirve.
+  if (enWeb) return uri;
+  const carpeta = new Directory(Paths.document, CARPETA);
+  carpeta.create({ intermediates: true, idempotent: true });
+  const destino = new File(carpeta, `${prefijo}-${Date.now()}.webp`);
+  new File(uri).copySync(destino);
+  return destino.uri;
+}
+
+/** Borra las fotos que quedaron de antes, así la carpeta no crece sin control. */
+function limpiarCarpeta() {
+  if (enWeb) return;
+  const carpeta = new Directory(Paths.document, CARPETA);
+  if (!carpeta.exists) return;
+  for (const item of carpeta.list()) {
+    if (item instanceof File) item.delete();
+  }
+}
 
 /** Si la foto es casi cuadrada llena el círculo sola; si no, conviene acomodarla. */
 export function necesitaAjuste({ width, height }: ImagenLogo) {
@@ -33,7 +64,13 @@ export async function prepararImagen(uri: string): Promise<ImagenLogo> {
     maxHeight: LADO_TRABAJO,
   }).renderAsync();
   const guardada = await imagen.saveAsync({ format: SaveFormat.WEBP, compress: 0.9 });
-  return { uri: guardada.uri, width: guardada.width, height: guardada.height };
+  // Foto nueva: se borra lo que quedó de la anterior.
+  limpiarCarpeta();
+  return {
+    uri: guardarAparte(guardada.uri, 'foto'),
+    width: guardada.width,
+    height: guardada.height,
+  };
 }
 
 /** Hasta dónde se puede correr la foto sin que el círculo quede con huecos (en fracción del círculo). */
@@ -66,5 +103,5 @@ export async function recortarLogo(imagen: ImagenLogo, ajuste: AjusteLogo): Prom
   if (lado > LADO_FINAL) contexto.resize({ width: LADO_FINAL, height: LADO_FINAL });
   const recorte = await contexto.renderAsync();
   const guardado = await recorte.saveAsync({ format: SaveFormat.WEBP, compress: 0.85 });
-  return guardado.uri;
+  return guardarAparte(guardado.uri, 'logo');
 }
