@@ -132,7 +132,7 @@ export function EntradaScreen({
         <BotonGoogle onPress={alGoogle} />
 
         <AppText variant="footnote" color="textSecondary">
-          Al continuar aceptás los{' '}
+          Al continuar aceptás{' '}
           <AppText
             variant="footnote"
             color="primaryText"
@@ -140,13 +140,13 @@ export function EntradaScreen({
             onPress={() => alVerLegal('terminos')}>
             Términos
           </AppText>{' '}
-          y la{' '}
+          y{' '}
           <AppText
             variant="footnote"
             color="primaryText"
             accessibilityRole="link"
             onPress={() => alVerLegal('privacidad')}>
-            Política de privacidad
+            Privacidad
           </AppText>
           .
         </AppText>
