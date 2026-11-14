@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 import { AjustesScreen } from '@/features/ajustes/ajustes-screen';
+import { avisosDe, sinLeer } from '@/features/avisos/avisos';
+import { AvisosScreen } from '@/features/avisos/avisos-screen';
+import { PermisoAvisosScreen } from '@/features/avisos/permiso-avisos-screen';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import {
   aGuardada,
@@ -21,7 +24,7 @@ import { InicioScreen } from './inicio-screen';
 import { ListaScreen } from './lista-screen';
 import { PerfilScreen } from './perfil-screen';
 
-type Pantalla = 'inicio' | 'perfil' | 'plan' | 'planes' | 'lista' | 'ajustes';
+type Pantalla = 'inicio' | 'perfil' | 'plan' | 'planes' | 'lista' | 'avisos' | 'ajustes';
 
 /** Lo que dice "Mi plan" en el inicio. */
 function detallePlan(suscripcion: Suscripcion | undefined) {
@@ -53,7 +56,28 @@ export function PanelProveedor() {
   );
   const [historial, setHistorial] = useState<ArchivoLista[]>(historialDePrueba);
 
+  const avisos = avisosDe(cuenta);
+  const leidos = cuenta.avisos?.leidos ?? [];
+  const nuevos = sinLeer(avisos, leidos);
+  // Los que eran nuevos al abrir la bandeja siguen marcados mientras está abierta.
+  const [marcados, setMarcados] = useState<string[]>([]);
+
   const volver = () => setPantalla('inicio');
+
+  const abrirAvisos = () => {
+    setMarcados(nuevos.map((a) => a.id));
+    actualizar((actual) => ({
+      avisos: { activos: actual.avisos?.activos ?? false, leidos: avisos.map((a) => a.id) },
+    }));
+    setPantalla('avisos');
+  };
+
+  // Después de contratar el primer plan, una sola vez: para qué son los avisos y el permiso.
+  if (suscripcion && !cuenta.avisos) {
+    return (
+      <PermisoAvisosScreen alResponder={(activos) => actualizar({ avisos: { activos, leidos } })} />
+    );
+  }
 
   /** La lista vigente pasa al historial y la nueva queda como actual. */
   const subirLista = (nueva: ArchivoLista) => {
@@ -99,6 +123,11 @@ export function PanelProveedor() {
       <ListaScreen actual={lista} historial={historial} alSubir={subirLista} alVolver={volver} />
     );
   }
+  if (pantalla === 'avisos') {
+    return (
+      <AvisosScreen avisos={avisos} nuevos={marcados} alAbrir={setPantalla} alVolver={volver} />
+    );
+  }
   if (pantalla === 'ajustes') {
     return <AjustesScreen alVolver={volver} />;
   }
@@ -127,8 +156,19 @@ export function PanelProveedor() {
           onPress: () => setPantalla('lista'),
         },
         {
+          titulo: 'Avisos',
+          detalle:
+            nuevos.length === 0
+              ? 'Nada nuevo'
+              : nuevos.length === 1
+                ? `Nuevo: ${nuevos[0].titulo}`
+                : `${nuevos.length} avisos nuevos`,
+          aviso: nuevos.length > 0,
+          onPress: abrirAvisos,
+        },
+        {
           titulo: 'Ajustes',
-          detalle: 'Apariencia, cuenta y legal',
+          detalle: 'Apariencia, avisos, cuenta y legal',
           onPress: () => setPantalla('ajustes'),
         },
       ]}

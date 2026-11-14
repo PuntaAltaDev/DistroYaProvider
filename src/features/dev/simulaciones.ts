@@ -1,5 +1,8 @@
+import { Platform } from 'react-native';
+
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { aGuardada, DIA } from '@/features/suscripcion/datos';
+import { programarAviso } from '@/lib/notificaciones';
 
 /** Lo que se puede simular: cada cosa reemplaza una respuesta del servidor o del administrador. */
 export type Simulacion = { etiqueta: string; hacer: () => void | Promise<void> };
@@ -16,7 +19,10 @@ export function useSimulaciones(): Simulacion[] {
 
   if (cuenta.estado === 'pendiente') {
     lista.push(
-      { etiqueta: 'Aprobar el perfil', hacer: () => actualizar({ estado: 'aprobado' }) },
+      {
+        etiqueta: 'Aprobar el perfil',
+        hacer: () => actualizar({ estado: 'aprobado', fechaAprobacion: new Date().toISOString() }),
+      },
       {
         etiqueta: 'Rechazar el perfil',
         hacer: () => actualizar({ estado: 'rechazado', motivoRechazo: MOTIVO_DE_PRUEBA }),
@@ -41,6 +47,19 @@ export function useSimulaciones(): Simulacion[] {
       { etiqueta: 'Plan: vencido', hacer: () => planQueVence(-2) },
       { etiqueta: 'Plan: sin plan', hacer: () => actualizar({ suscripcion: undefined }) },
     );
+    // En web no hay avisos del teléfono.
+    if (Platform.OS !== 'web') {
+      lista.push({
+        etiqueta: 'Aviso del teléfono en 5 segundos',
+        hacer: () =>
+          programarAviso({
+            id: 'prueba',
+            titulo: 'Tu plan vence en 7 días',
+            texto: 'Aviso de prueba.',
+            fecha: new Date(Date.now() + 5000),
+          }),
+      });
+    }
   }
 
   return lista;

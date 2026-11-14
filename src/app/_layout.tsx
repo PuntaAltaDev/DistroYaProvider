@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
 import { RanuraDev } from '@/components/ui/ranura-dev';
+import { ProgramadorAvisos } from '@/features/avisos/programador-avisos';
 import { CuentaProvider } from '@/features/cuenta/cuenta-provider';
 import { cargarCuenta, type Cuenta } from '@/features/cuenta/cuenta';
 import { HerramientasDev } from '@/features/dev/herramientas-dev';
@@ -54,6 +55,7 @@ export default function RootLayout() {
   return (
     <AppThemeProvider initialMode={guardado.modo} onModeChange={guardarModo}>
       <CuentaProvider inicial={guardado.cuenta}>
+        <ProgramadorAvisos />
         <RanuraDev value={__DEV__ ? <HerramientasDev /> : null}>
           <ThemedNavigation />
         </RanuraDev>

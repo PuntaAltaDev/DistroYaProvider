@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
+import { permitirAvisos } from '@/features/avisos/avisos';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
@@ -19,13 +20,16 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
   { valor: 'system', etiqueta: 'Como el teléfono' },
 ];
 
-/** Ajustes del proveedor: cómo se ve la app, su cuenta y lo legal. */
+/** Ajustes del proveedor: cómo se ve la app, los avisos, su cuenta y lo legal. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
-  const { spacing, mode, setMode } = useAppTheme();
-  const { actualizar, reiniciar } = useCuenta();
+  const { colors, spacing, mode, setMode } = useAppTheme();
+  const { cuenta, actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   const [legal, setLegal] = useState<DocumentoLegal>();
+  /** El teléfono tiene los avisos bloqueados: se ofrece ir a sus ajustes. */
+  const [bloqueados, setBloqueados] = useState(false);
+  const avisosActivos = !!cuenta.avisos?.activos;
 
   if (legal) return <LegalScreen documento={legal} alVolver={() => setLegal(undefined)} />;
 
@@ -34,6 +38,13 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
     // Se cierra el acceso pero se conservan el perfil y el avance del registro: al volver a
     // entrar, sigue donde estaba. Con la API, acá también se cierra la sesión en el servidor.
     actualizar({ iniciada: false, metodo: undefined, email: undefined });
+  };
+
+  const cambiarAvisos = async (quiere: boolean) => {
+    haptics.select();
+    const activos = quiere && (await permitirAvisos());
+    setBloqueados(quiere && !activos);
+    actualizar((actual) => ({ avisos: { activos, leidos: actual.avisos?.leidos ?? [] } }));
   };
 
   const eliminarCuenta = async () => {
@@ -66,12 +77,39 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
         ))}
       </Grupo>
 
-      <Grupo titulo="CUENTA" orden={1}>
+      <Grupo titulo="AVISOS" orden={1}>
+        <Fila
+          etiqueta="Avisos de vencimiento"
+          rol="switch"
+          seleccionada={avisosActivos}
+          onPress={() => cambiarAvisos(!avisosActivos)}
+          derecha={
+            <Switch
+              value={avisosActivos}
+              onValueChange={cambiarAvisos}
+              trackColor={{ true: colors.primary, false: colors.borderStrong }}
+              accessibilityLabel="Avisos de vencimiento"
+            />
+          }
+        />
+      </Grupo>
+      {bloqueados && Platform.OS !== 'web' ? (
+        <Pressable onPress={() => Linking.openSettings()} accessibilityRole="link">
+          <AppText variant="footnote" color="textSecondary">
+            Los avisos están bloqueados en tu teléfono.{' '}
+            <AppText variant="footnote" color="primaryText">
+              Abrir ajustes del teléfono
+            </AppText>
+          </AppText>
+        </Pressable>
+      ) : null}
+
+      <Grupo titulo="CUENTA" orden={2}>
         <Fila etiqueta="Cerrar sesión" onPress={cerrarSesion} />
         <Fila etiqueta="Eliminar cuenta" color="danger" onPress={() => setConfirmando(true)} />
       </Grupo>
 
-      <Grupo titulo="LEGAL" orden={2}>
+      <Grupo titulo="LEGAL" orden={3}>
         <Fila etiqueta="Términos y condiciones" flecha onPress={() => setLegal('terminos')} />
         <Fila etiqueta="Política de privacidad" flecha onPress={() => setLegal('privacidad')} />
       </Grupo>
@@ -138,7 +176,7 @@ type FilaProps = {
   flecha?: boolean;
   /** Lo que va a la derecha (un tilde, un interruptor). */
   derecha?: ReactNode;
-  rol?: 'button' | 'radio';
+  rol?: 'button' | 'radio' | 'switch';
   seleccionada?: boolean;
 };
 
@@ -156,7 +194,13 @@ function Fila({
     <Pressable
       onPress={onPress}
       accessibilityRole={rol}
-      accessibilityState={rol === 'radio' ? { selected: seleccionada } : undefined}
+      accessibilityState={
+        rol === 'radio'
+          ? { selected: seleccionada }
+          : rol === 'switch'
+            ? { checked: seleccionada }
+            : undefined
+      }
       style={[styles.fila, { borderBottomColor: colors.border }]}>
       <AppText variant="body" color={color}>
         {etiqueta}

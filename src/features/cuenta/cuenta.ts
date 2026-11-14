@@ -34,8 +34,19 @@ export type Cuenta = {
   fechaEnvio?: string;
   /** Qué pidió corregir el administrador. Se borra al reenviar el registro. */
   motivoRechazo?: string;
+  /** Cuándo lo aprobó el administrador (ISO). Con la API lo manda el servidor. */
+  fechaAprobacion?: string;
   /** Plan contratado. Falta hasta que elige el primero (después de ser aprobado). */
   suscripcion?: SuscripcionGuardada;
+  /** Avisos: si los quiere y cuáles ya leyó. Falta hasta que se le pregunta por primera vez. */
+  avisos?: PreferenciaAvisos;
+};
+
+export type PreferenciaAvisos = {
+  /** Quiere avisos del teléfono (además, el sistema tiene que dar permiso). */
+  activos: boolean;
+  /** Ids de los avisos de la bandeja que ya vio. */
+  leidos: string[];
 };
 
 export const CUENTA_INICIAL: Cuenta = {
@@ -76,8 +87,17 @@ export async function cargarCuenta(): Promise<Cuenta> {
     form,
     fechaEnvio: guardada.fechaEnvio,
     motivoRechazo: typeof guardada.motivoRechazo === 'string' ? guardada.motivoRechazo : undefined,
+    fechaAprobacion:
+      typeof guardada.fechaAprobacion === 'string' ? guardada.fechaAprobacion : undefined,
     // Se valida pasándola a fechas: si está dañada, queda sin plan (y se le pide elegir uno).
     suscripcion: suscripcion ? aGuardada(suscripcion) : undefined,
+    avisos:
+      typeof guardada.avisos?.activos === 'boolean'
+        ? {
+            activos: guardada.avisos.activos,
+            leidos: Array.isArray(guardada.avisos.leidos) ? guardada.avisos.leidos : [],
+          }
+        : undefined,
   };
 }
 
