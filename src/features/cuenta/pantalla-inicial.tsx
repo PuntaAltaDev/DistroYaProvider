@@ -9,6 +9,9 @@ import { useCuenta } from './cuenta-provider';
 export function PantallaInicial() {
   const { cuenta, actualizar } = useCuenta();
 
+  // Sin sesión iniciada (primera vez, o después de "Cerrar sesión"), siempre se pasa por el acceso.
+  if (!cuenta.iniciada) return <Acceso />;
+
   if (cuenta.estado === 'aprobado') return <PanelProveedor />;
 
   if (cuenta.estado === 'pendiente') {
@@ -21,8 +24,6 @@ export function PantallaInicial() {
       />
     );
   }
-
-  if (!cuenta.iniciada) return <Acceso />;
 
   return <RegistroScreen />;
 }

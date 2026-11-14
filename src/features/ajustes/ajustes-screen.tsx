@@ -20,9 +20,16 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
 /** Ajustes del proveedor: cómo se ve la app y su cuenta. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
   const { colors, spacing, mode, setMode } = useAppTheme();
-  const { reiniciar } = useCuenta();
+  const { actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
+
+  const cerrarSesion = () => {
+    haptics.tap();
+    // Se cierra el acceso pero se conservan el perfil y el avance del registro: al volver a
+    // entrar, sigue donde estaba. Con la API, acá también se cierra la sesión en el servidor.
+    actualizar({ iniciada: false, metodo: undefined, email: undefined });
+  };
 
   const eliminarCuenta = async () => {
     setEliminando(true);
@@ -63,6 +70,12 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
           CUENTA
         </AppText>
         <View style={[styles.grupo, { borderTopColor: colors.border }]}>
+          <Pressable
+            onPress={cerrarSesion}
+            accessibilityRole="button"
+            style={[styles.fila, { borderBottomColor: colors.border }]}>
+            <AppText variant="body">Cerrar sesión</AppText>
+          </Pressable>
           <Pressable
             onPress={() => setConfirmando(true)}
             accessibilityRole="button"
