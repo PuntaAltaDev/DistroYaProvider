@@ -30,12 +30,14 @@ Copiá `.env.example` como `.env.local` y completá la clave. **Nunca** subas `.
 
 ## Scripts
 
-| Comando             | Qué hace                                               |
-| ------------------- | ------------------------------------------------------ |
-| `npm run check`     | Tipos + lint + formato. Correrlo antes de cada commit. |
-| `npm run typecheck` | Revisa los tipos de TypeScript.                        |
-| `npm run lint`      | Revisa el código con ESLint.                           |
-| `npm run format`    | Acomoda el formato con Prettier.                       |
+| Comando              | Qué hace                                                         |
+| -------------------- | ---------------------------------------------------------------- |
+| `npm run check`      | Tipos + lint + formato + pruebas. Correrlo antes de cada commit. |
+| `npm test`           | Corre las pruebas automáticas.                                   |
+| `npm run test:watch` | Las vuelve a correr con cada cambio.                             |
+| `npm run typecheck`  | Revisa los tipos de TypeScript.                                  |
+| `npm run lint`       | Revisa el código con ESLint.                                     |
+| `npm run format`     | Acomoda el formato con Prettier.                                 |
 
 ## Estado actual
 

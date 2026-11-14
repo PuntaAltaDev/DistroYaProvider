@@ -13,6 +13,7 @@ Cómo está organizado el código de DistroYa Proveedores y las reglas que se si
 | Direcciones         | Google Places API (New), por HTTP                                                 |
 | Imágenes y archivos | expo-image-picker, expo-image-manipulator, expo-file-system, expo-document-picker |
 | Avisos              | expo-notifications (locales; los push llegan con el backend)                      |
+| Pruebas             | Jest 30 con jest-expo                                                             |
 
 ## Carpetas
 
@@ -55,6 +56,7 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 6. **Las librerías de Expo se instalan con `npx expo install`** y antes de usar una API se mira la documentación de la versión instalada (ver `AGENTS.md`).
 7. **Los secretos no se suben.** Van en `.env.local`.
 8. **Alto de línea de Inter: nunca menos de 1,25 veces el tamaño.** Con menos, Android corta las colas de la "g" y la "p".
+9. **Las reglas del negocio tienen pruebas automáticas** (planes, vencimientos, avisos, validaciones, lectura de lo guardado). Van en una carpeta `__tests__` al lado del código, en archivos `*-test.ts`, y corren con `npm test` (también dentro de `npm run check`). Si se cambia una regla, se cambia su prueba en el mismo commit.
 
 ## Diseño
 
@@ -88,7 +90,7 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 Cosas que hoy no cumplen del todo las reglas de arriba:
 
 - `cuenta` guarda el formulario de `registro` y `registro` usa a `cuenta`: no hay ciclo de archivos, pero las dos carpetas se necesitan entre sí.
-- Las pantallas no tienen pruebas automáticas todavía.
+- Las pantallas no tienen pruebas automáticas todavía (solo las reglas del negocio). Para recorrer el flujo en el teléfono, Expo recomienda pruebas de punta a punta con Maestro.
 
 ## Decisiones
 
