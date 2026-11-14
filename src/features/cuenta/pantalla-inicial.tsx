@@ -10,11 +10,20 @@ import { RegistroScreen } from '@/features/registro/registro-screen';
 import { useCuenta } from './cuenta-provider';
 
 /**
- * Elige qué pantalla mostrar al abrir la app, según en qué punto quedó el proveedor:
+ * Al reiniciar (volver al inicio o eliminar la cuenta) se arma todo de nuevo: así ninguna
+ * pantalla conserva en memoria dónde estaba, como si la app recién se abriera.
+ */
+export function PantallaInicial() {
+  const { generacion } = useCuenta();
+  return <Flujo key={generacion} />;
+}
+
+/**
+ * Elige qué pantalla mostrar, según en qué punto quedó el proveedor:
  * acceso → registro (borrador) → en revisión (pendiente) → panel (aprobado),
  * o "Revisá tus datos" (rechazado) → registro de nuevo con los datos cargados.
  */
-export function PantallaInicial() {
+function Flujo() {
   const { cuenta, actualizar } = useCuenta();
   const [ayuda, setAyuda] = useState(false);
   const nombre = cuenta.form.razonSocial.trim();
