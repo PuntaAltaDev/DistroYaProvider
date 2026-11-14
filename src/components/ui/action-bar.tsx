@@ -47,10 +47,10 @@ export function ActionBar({ label, onPress, loading = false, progress }: ActionB
         haptics.tap();
         onPress();
       }}
-      style={{ backgroundColor: colors.text }}>
+      style={{ backgroundColor: colors.actionBg }}>
       {progress !== undefined ? (
         <View style={styles.track}>
-          <Animated.View style={[styles.fill, { backgroundColor: colors.primary }, avanceStyle]} />
+          <Animated.View style={[styles.fill, { backgroundColor: colors.actionAccent }, avanceStyle]} />
         </View>
       ) : null}
       <View
@@ -62,14 +62,14 @@ export function ActionBar({ label, onPress, loading = false, progress }: ActionB
             paddingBottom: spacing.xl + insets.bottom,
           },
         ]}>
-        <AppText variant="headline" color="background">
+        <AppText variant="headline" color="actionText">
           {label}
         </AppText>
         {loading ? (
-          <ActivityIndicator color={colors.primary} />
+          <ActivityIndicator color={colors.actionAccent} />
         ) : (
           <Animated.View style={flechaStyle}>
-            <Icon name="forward" size={24} color="primary" />
+            <Icon name="forward" size={24} color="actionAccent" />
           </Animated.View>
         )}
       </View>

@@ -70,11 +70,11 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
         <AppText numberOfLines={1} adjustsFontSizeToFit style={[styles.fecha, { color: colors.text }]}>
           {fechaLarga(suscripcion.endDate)}
         </AppText>
-        <View style={[styles.pista, { backgroundColor: colors.textMuted }]}>
+        <View style={[styles.pista, { backgroundColor: colors.border }]}>
           <Animated.View
             style={[
               styles.relleno,
-              { backgroundColor: estado === 'vencida' ? colors.danger : colors.primaryText },
+              { backgroundColor: estado === 'vencida' ? colors.danger : colors.primary },
               avanceStyle,
             ]}
           />
@@ -93,7 +93,7 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
 }
 
 const styles = StyleSheet.create({
-  fecha: { fontFamily: fonts.serif, fontSize: 30, lineHeight: 34 },
+  fecha: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 34, letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
   pista: { height: 1, justifyContent: 'center' },
   relleno: { height: 2.5 },
 });

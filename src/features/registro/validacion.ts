@@ -1,6 +1,12 @@
+import type { AjusteLogo, ImagenLogo } from './logo';
+
 /** Datos que completa el proveedor en el registro. */
 export type RegistroForm = {
+  /** El logo ya recortado (cuadrado, 512 px): es lo que se envía. */
   logoUri?: string;
+  /** La foto entera que eligió, para poder volver a acomodarla. */
+  logoOriginal?: ImagenLogo;
+  logoAjuste?: AjusteLogo;
   razonSocial: string;
   whatsapp: string;
   telefono: string;
@@ -34,8 +40,21 @@ const soloDigitos = (texto: string) => texto.replace(/\D/g, '');
 
 /** Deja escribir solo lo que puede llevar un teléfono: números, espacios y un + al inicio. */
 export function limpiarTelefono(texto: string) {
-  const limpio = texto.replace(/[^\d\s+]/g, '').replace(/(?!^)\+/g, '');
-  return limpio.slice(0, 20);
+  const limpio = texto.replace(/[^\d\s+-]/g, '').replace(/(?!^)\+/g, '');
+  // Con +54 adelante se deja como lo escribió; si no, se agrupa para leerlo fácil.
+  if (limpio.startsWith('+')) return limpio.slice(0, 20);
+  return agruparTelefono(limpio.replace(/\D/g, '')).slice(0, 20);
+}
+
+/** "2914550000" → "291 455-0000". Los separadores aparecen recién cuando hay un dígito después. */
+function agruparTelefono(digitos: string) {
+  // Largo del código de área: 11 (CABA), 0291 (fijo con 0) o 291.
+  const area = digitos.startsWith('11') ? 2 : digitos.startsWith('0') ? 4 : 3;
+  const medio = area === 2 ? 4 : 3;
+  const a = digitos.slice(0, area);
+  const b = digitos.slice(area, area + medio);
+  const c = digitos.slice(area + medio);
+  return [a, b && ` ${b}`, c && `-${c}`].join('');
 }
 
 /** Muestra un tamaño de archivo de forma legible: "850 KB", "2,4 MB". */

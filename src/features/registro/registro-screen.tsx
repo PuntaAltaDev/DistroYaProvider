@@ -40,7 +40,7 @@ const PASOS: {
     id: 'nombre',
     lineas: ['¿Cómo', 'se llama'],
     acento: 'tu negocio?',
-    bajada: 'Así te van a ver los bares y restaurantes.',
+    bajada: 'Así te van a ver tus clientes.',
     Componente: PasoNombre,
   },
   {

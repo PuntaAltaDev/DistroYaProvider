@@ -73,7 +73,7 @@ function FilaAcceso({
           gap: spacing.lg,
           paddingVertical: spacing.xl,
           borderTopWidth: primera ? StyleSheet.hairlineWidth : 0,
-          borderColor: colors.textMuted,
+          borderColor: colors.border,
           backgroundColor: pressed ? colors.primarySoft : 'transparent',
         },
       ]}>
@@ -82,11 +82,11 @@ function FilaAcceso({
       </AppText>
       <View style={[styles.flex, { gap: spacing.xxs }]}>
         <AppText style={[styles.titulo, { color: colors.text }]}>{titulo}</AppText>
-        <AppText variant="footnote" color={aviso ? 'primaryText' : 'textSecondary'} numberOfLines={1}>
+        <AppText variant="footnote" color={aviso ? 'primaryText' : 'textSecondary'} numberOfLines={1} ellipsizeMode="middle">
           {detalle}
         </AppText>
       </View>
-      <Icon name="forward" size={20} color="primary" />
+      <Icon name="forward" size={20} color="primaryText" />
     </Pressable>
   );
 }
@@ -98,6 +98,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  numero: { fontFamily: fonts.serif, fontSize: 22, lineHeight: 26, width: 30 },
-  titulo: { fontFamily: fonts.serif, fontSize: 30, lineHeight: 34 },
+  numero: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 22, width: 26, fontVariant: ['tabular-nums'] },
+  titulo: { fontFamily: fonts.semibold, fontSize: 24, lineHeight: 28, letterSpacing: -0.7 },
 });

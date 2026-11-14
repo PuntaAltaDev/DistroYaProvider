@@ -6,31 +6,36 @@
 
 /** Paleta base: valores fijos. Las pantallas NO la usan directo, usan `colors`. */
 export const palette = {
-  amber50: '#FBF3E6',
-  amber100: '#F5E1BF',
-  amber300: '#E0AE5C',
-  amber400: '#D99A3E',
-  amber500: '#C98A2E',
-  amber600: '#B07524',
-  amber700: '#8F5D1A',
-  amber900: '#2A2014',
-
   white: '#FFFFFF',
-  stone25: '#FAF9F7',
-  stone50: '#F5F3EF',
-  stone100: '#E7E2D8',
-  stone200: '#D3CEC4',
-  stone400: '#B4AFA6',
-  stone500: '#8A867E',
-  stone600: '#6E6A63',
-  stone650: '#9A958C',
-  ink700: '#3A3733',
-  ink750: '#2E2C29',
-  ink800: '#242220',
-  ink850: '#1C1B1A',
-  ink900: '#121212',
-  ink950: '#141414',
-  cream: '#F4F1EA',
+
+  // Verdes agua (clara).
+  mint25: '#EAF6F5',
+  mint50: '#E0F2F1',
+  mint100: '#D3ECEA',
+  mint150: '#C8E7E5',
+  mint200: '#A9D3D1',
+  mint300: '#7FB9B6',
+
+  // Turquesa (acento).
+  teal400: '#18A4A3',
+  teal500: '#0F8584',
+  teal600: '#0A6E6D',
+
+  // Grises verdosos para texto secundario.
+  slate300: '#8FB3B3',
+  slate400: '#6F9496',
+  slate500: '#517273',
+  slate600: '#3E5F60',
+
+  // Fondos oscuros.
+  deep600: '#2A5658',
+  deep700: '#1D4446',
+  deep800: '#0F3335',
+  deep850: '#0A2A2C',
+  deep900: '#041F21',
+  foam: '#EAF3F2',
+
+  lime: '#BECF6E',
 
   green600: '#2F7A4F',
   green300: '#5FB27F',
@@ -53,6 +58,10 @@ type ColorToken =
   | 'onPrimary'
   | 'primarySoft'
   | 'primaryText'
+  | 'accent'
+  | 'actionBg'
+  | 'actionText'
+  | 'actionAccent'
   | 'success'
   | 'danger'
   | 'overlay';
@@ -62,43 +71,56 @@ export type AppColors = Record<ColorToken, string>;
 /** Colores con significado. Mismas claves en claro y oscuro. */
 const light: AppColors = {
   background: palette.white,
-  surface: palette.stone25,
-  surfaceAlt: palette.stone50,
-  border: palette.stone100,
-  borderStrong: palette.stone200,
+  surface: palette.mint25,
+  surfaceAlt: palette.mint50,
+  border: palette.mint200,
+  borderStrong: palette.mint300,
 
-  text: palette.ink950,
-  textSecondary: palette.stone500,
-  textMuted: palette.stone400,
+  text: palette.deep900,
+  textSecondary: palette.slate600,
+  /** Textos de ejemplo (placeholder): llega a 4,5:1 sobre el fondo. */
+  textMuted: palette.slate500,
 
-  primary: palette.amber500,
-  primaryPressed: palette.amber600,
-  onPrimary: palette.ink950,
-  primarySoft: palette.amber50,
-  /** Ámbar oscurecido para texto chico sobre blanco (se lee mejor). */
-  primaryText: palette.amber700,
+  /** Cursor, avance y líneas activas. No se usa para texto chico. */
+  primary: palette.teal400,
+  primaryPressed: palette.teal500,
+  onPrimary: palette.deep900,
+  primarySoft: palette.mint150,
+  /** Turquesa oscurecido para texto chico, números y flechas. */
+  primaryText: palette.teal600,
+  /** Frase de acento de los titulares (texto grande). */
+  accent: palette.teal500,
+
+  actionBg: palette.deep900,
+  actionText: palette.white,
+  actionAccent: palette.lime,
 
   success: palette.green600,
   danger: palette.red600,
-  overlay: 'rgba(20, 20, 20, 0.4)',
+  overlay: 'rgba(4, 31, 33, 0.4)',
 };
 
 const dark: AppColors = {
-  background: palette.ink900,
-  surface: palette.ink850,
-  surfaceAlt: palette.ink800,
-  border: palette.ink750,
-  borderStrong: palette.ink700,
+  background: palette.deep900,
+  surface: palette.deep850,
+  surfaceAlt: palette.deep800,
+  border: palette.deep700,
+  borderStrong: palette.deep600,
 
-  text: palette.cream,
-  textSecondary: palette.stone650,
-  textMuted: palette.stone600,
+  text: palette.foam,
+  textSecondary: palette.slate300,
+  textMuted: palette.slate400,
 
-  primary: palette.amber400,
-  primaryPressed: palette.amber500,
-  onPrimary: palette.ink900,
-  primarySoft: palette.amber900,
-  primaryText: palette.amber300,
+  primary: palette.lime,
+  primaryPressed: palette.lime,
+  onPrimary: palette.deep900,
+  primarySoft: palette.deep800,
+  primaryText: palette.teal400,
+  accent: palette.teal400,
+
+  actionBg: palette.lime,
+  actionText: palette.deep900,
+  actionAccent: palette.deep900,
 
   success: palette.green300,
   danger: palette.red300,
@@ -110,27 +132,29 @@ export type ColorScheme = keyof typeof colors;
 
 /** Familias de Inter (se cargan en `_layout.tsx`). */
 export const fonts = {
+  /** Solo en tamaños grandes (frase de acento de los titulares). */
+  light: 'Inter_200ExtraLight',
   regular: 'Inter_400Regular',
   medium: 'Inter_500Medium',
   semibold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
-  /** Serif editorial: solo para los titulares grandes. */
-  serif: 'InstrumentSerif_400Regular',
-  serifItalic: 'InstrumentSerif_400Regular_Italic',
 } as const;
 
-/** Escala tipográfica inspirada en iOS. */
+/** Números del mismo ancho: fechas, teléfonos y contadores quedan alineados. */
+const tabular = ['tabular-nums'] as ('tabular-nums')[];
+
+/** Escala tipográfica. Mínimo 13px; cuerpo 15–17px con renglón de ~1,4. */
 export const typography = {
-  largeTitle: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 41, letterSpacing: -0.6 },
-  title: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 34, letterSpacing: -0.4 },
-  title2: { fontFamily: fonts.semibold, fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
-  headline: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 22, letterSpacing: -0.2 },
-  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 24, letterSpacing: -0.1 },
-  callout: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, letterSpacing: -0.1 },
-  subhead: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 20, letterSpacing: 0 },
-  footnote: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, letterSpacing: 0 },
-  caption: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 16, letterSpacing: 0 },
-  overline: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16, letterSpacing: 3 },
+  largeTitle: { fontFamily: fonts.bold, fontSize: 34, lineHeight: 41, letterSpacing: -0.6, fontVariant: tabular },
+  title: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 34, letterSpacing: -0.4, fontVariant: tabular },
+  title2: { fontFamily: fonts.semibold, fontSize: 22, lineHeight: 28, letterSpacing: -0.3, fontVariant: tabular },
+  headline: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 23, letterSpacing: -0.2, fontVariant: tabular },
+  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 23, letterSpacing: -0.1, fontVariant: tabular },
+  callout: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 21, letterSpacing: -0.1, fontVariant: tabular },
+  subhead: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 21, letterSpacing: 0, fontVariant: tabular },
+  footnote: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, letterSpacing: 0, fontVariant: tabular },
+  caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0, fontVariant: tabular },
+  overline: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16, letterSpacing: 2.5, fontVariant: tabular },
 } as const;
 export type TypographyVariant = keyof typeof typography;
 

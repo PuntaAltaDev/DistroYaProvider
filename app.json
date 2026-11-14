@@ -33,7 +33,14 @@
           "imageWidth": 76
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "DistroYa usa la cámara para que saques la foto de tu negocio.",
+          "photosPermission": "DistroYa accede a tus fotos para que elijas la de tu negocio."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

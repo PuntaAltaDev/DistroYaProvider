@@ -66,9 +66,9 @@ export function historialDePrueba(): ArchivoLista[] {
   ];
 }
 
-/** "13 de diciembre de 2026" */
+/** "13 de diciembre" */
 export const fechaLarga = (d: Date) =>
-  d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+  d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
 
 /** "13/11/2026" */
 export const fechaCorta = (d: Date) =>

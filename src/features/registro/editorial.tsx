@@ -67,20 +67,42 @@ export function BarraSuperior({
             </AppText>
           </AppText>
         </View>
-        <AppText variant="caption" style={styles.derecha}>
-          {derecha}
-        </AppText>
+        <View style={[styles.fila, { gap: spacing.lg }]}>
+          <CambioDeModo />
+          <AppText variant="caption" style={styles.derecha}>
+            {derecha}
+          </AppText>
+        </View>
       </View>
       {conAvance ? (
         <Animated.View
           style={[
             styles.avance,
-            { backgroundColor: colors.primaryText },
+            { backgroundColor: colors.primary },
             avanceStyle,
           ]}
         />
       ) : null}
     </View>
+  );
+}
+
+/** Circulito mitad lleno: cambia entre claro y oscuro. Solo para revisar el diseño. */
+function CambioDeModo() {
+  const { scheme, setMode, colors } = useAppTheme();
+  const oscuro = scheme === 'dark';
+
+  return (
+    <Pressable
+      onPress={() => setMode(oscuro ? 'light' : 'dark')}
+      hitSlop={15}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: oscuro }}
+      accessibilityLabel="Modo oscuro">
+      <View style={[styles.modo, { borderColor: colors.textSecondary }]}>
+        <View style={[styles.modoMitad, { backgroundColor: colors.textSecondary }]} />
+      </View>
+    </Pressable>
   );
 }
 
@@ -93,16 +115,17 @@ type TitularProps = {
   clave: string | number;
 };
 
-/** Titular gigante en serif. Cada línea entra desde abajo, una después de la otra. */
+/** Titular grande: Inter 600 y la última frase en Inter 200. Cada línea entra desde abajo. */
 export function Titular({ lineas, acento, clave }: TitularProps) {
   const { colors } = useAppTheme();
   const { width } = useWindowDimensions();
   // El tamaño acompaña el ancho del teléfono, con un mínimo y un máximo.
-  const size = Math.min(Math.max(Math.min(width, 520) * 0.17, 50), 76);
+  const size = Math.min(Math.max(Math.min(width, 520) * 0.12, 40), 58);
   const base = {
-    fontFamily: fonts.serif,
+    fontFamily: fonts.semibold,
     fontSize: size,
-    lineHeight: size * 0.98,
+    lineHeight: size * 1.06,
+    letterSpacing: -size * 0.035,
   };
 
   return (
@@ -121,7 +144,7 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
         entering={FadeInDown.delay(lineas.length * 70).duration(420)}
         style={[
           base,
-          { fontFamily: fonts.serifItalic, color: colors.primaryText },
+          { fontFamily: fonts.light, color: colors.accent },
         ]}
       >
         {acento}
@@ -139,4 +162,6 @@ const styles = StyleSheet.create({
   fila: { flexDirection: 'row', alignItems: 'center' },
   avance: { height: 2.5 },
   derecha: { letterSpacing: 2 },
+  modo: { width: 14, height: 14, borderRadius: 7, borderWidth: 1.5, overflow: 'hidden' },
+  modoMitad: { width: '50%', height: '100%' },
 });

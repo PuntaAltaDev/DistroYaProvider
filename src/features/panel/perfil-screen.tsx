@@ -103,7 +103,7 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
         />
         <LineField
           label="WhatsApp"
-          placeholder="11 5555 0000"
+          placeholder="291 455-0000"
           value={borrador.whatsapp}
           onChangeText={(texto) => cambiar({ whatsapp: limpiarTelefono(texto) })}
           error={errores.whatsapp}
@@ -116,7 +116,7 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
         <LineField
           inputRef={telefonoRef}
           label="Teléfono fijo · opcional"
-          placeholder="0291 455 0000"
+          placeholder="0291 455-0000"
           value={borrador.telefono}
           onChangeText={(texto) => cambiar({ telefono: limpiarTelefono(texto) })}
           error={errores.telefono}

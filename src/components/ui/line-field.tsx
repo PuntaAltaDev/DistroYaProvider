@@ -49,7 +49,7 @@ export function LineField({
     active.set(withTiming(focused ? 1 : 0, { duration: motion.duration.fast }));
   }, [focused, active, motion.duration.fast]);
 
-  const idle = error ? colors.danger : colors.textMuted;
+  const idle = error ? colors.danger : colors.borderStrong;
   const activeColor = error ? colors.danger : colors.primary;
   const lineStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(active.get(), [0, 1], [idle, activeColor]),
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
   input: {
     fontFamily: fonts.medium,
     fontSize: 22,
+    fontVariant: ['tabular-nums'],
     paddingVertical: 6,
     paddingHorizontal: 0,
     outlineStyle: 'none',

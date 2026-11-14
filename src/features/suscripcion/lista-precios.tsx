@@ -43,7 +43,7 @@ export function ListaDePrecios({ actual, historial, alSubir }: ListaDePreciosPro
     haptics.success();
   };
 
-  const linea = { borderColor: colors.textMuted };
+  const linea = { borderColor: colors.border };
 
   return (
     <View style={{ gap: spacing.xxl }}>
@@ -56,11 +56,11 @@ export function ListaDePrecios({ actual, historial, alSubir }: ListaDePreciosPro
           key={actual?.nombre ?? 'sin-lista'}
           entering={FadeIn.duration(300)}
           style={[styles.fila, styles.bordes, linea, { gap: spacing.md, paddingVertical: spacing.lg }]}>
-          <Icon name="document" size={26} color={actual ? 'primary' : 'textMuted'} />
+          <Icon name="document" size={26} color={actual ? 'primaryText' : 'textMuted'} />
           <View style={styles.flex}>
             {actual ? (
               <>
-                <AppText variant="headline" numberOfLines={1}>
+                <AppText variant="headline" numberOfLines={1} ellipsizeMode="middle">
                   {actual.nombre}
                 </AppText>
                 <AppText variant="footnote" color="textSecondary">
@@ -100,10 +100,10 @@ export function ListaDePrecios({ actual, historial, alSubir }: ListaDePreciosPro
                 entering={FadeInDown.duration(300)}
                 layout={LinearTransition.duration(250)}
                 style={[styles.fila, styles.bordeAbajo, linea, { gap: spacing.md, paddingVertical: spacing.md }]}>
-                <AppText variant="callout" color="textSecondary" numberOfLines={1} style={styles.flex}>
+                <AppText variant="callout" color="textSecondary" numberOfLines={1} ellipsizeMode="middle" style={styles.flex}>
                   {archivo.nombre}
                 </AppText>
-                <AppText variant="footnote" color="textMuted">
+                <AppText variant="footnote" color="textSecondary">
                   {fechaCorta(archivo.fecha)}
                 </AppText>
               </Animated.View>

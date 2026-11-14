@@ -61,7 +61,7 @@ export function RegistroExito({ nombre, alRevisar }: RegistroExitoProps) {
                 },
               ]}
             >
-              <Icon name="clock" size={18} color="primary" />
+              <Icon name="clock" size={18} color="primaryText" />
               <AppText variant="callout">Pendiente de aprobación</AppText>
             </Animated.View>
           </View>
