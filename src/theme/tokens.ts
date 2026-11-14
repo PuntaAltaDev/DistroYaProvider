@@ -36,6 +36,8 @@ export const palette = {
   foam: '#EAF3F2',
 
   lime: '#BECF6E',
+  /** Turquesa claro: ruedas del carrito del logo. */
+  aqua: '#7FE0D8',
 
   green600: '#2F7A4F',
   green300: '#5FB27F',
