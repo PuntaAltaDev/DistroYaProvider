@@ -17,6 +17,7 @@ const ICONS = {
   edit: { ios: 'pencil', android: 'edit', web: 'edit' },
   clock: { ios: 'clock', android: 'schedule', web: 'schedule' },
   restart: { ios: 'arrow.counterclockwise', android: 'restart_alt', web: 'restart_alt' },
+  simular: { ios: 'flask', android: 'science', web: 'science' },
 } as const satisfies Record<string, SymbolViewProps['name']>;
 
 export type IconName = keyof typeof ICONS;

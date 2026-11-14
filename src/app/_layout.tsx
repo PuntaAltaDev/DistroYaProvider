@@ -11,8 +11,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 
+import { RanuraDev } from '@/components/ui/ranura-dev';
 import { CuentaProvider } from '@/features/cuenta/cuenta-provider';
 import { cargarCuenta, type Cuenta } from '@/features/cuenta/cuenta';
+import { HerramientasDev } from '@/features/dev/herramientas-dev';
 import { cargarModo, guardarModo } from '@/lib/ajustes';
 import { AppThemeProvider, useAppTheme, type ThemeMode } from '@/theme';
 
@@ -52,7 +54,9 @@ export default function RootLayout() {
   return (
     <AppThemeProvider initialMode={guardado.modo} onModeChange={guardarModo}>
       <CuentaProvider inicial={guardado.cuenta}>
-        <ThemedNavigation />
+        <RanuraDev value={__DEV__ ? <HerramientasDev /> : null}>
+          <ThemedNavigation />
+        </RanuraDev>
       </CuentaProvider>
     </AppThemeProvider>
   );

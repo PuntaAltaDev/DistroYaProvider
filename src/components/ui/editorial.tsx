@@ -9,7 +9,7 @@ import Animated, {
 
 import { AppText } from '@/components/ui/app-text';
 import { Icon } from '@/components/ui/icon';
-import { VolverAlInicio } from '@/components/ui/volver-al-inicio';
+import { useRanuraDev } from '@/components/ui/ranura-dev';
 import { fonts, useAppTheme } from '@/theme';
 
 type BarraSuperiorProps = {
@@ -22,6 +22,7 @@ type BarraSuperiorProps = {
 /** Barra de arriba: marca a la izquierda, dato a la derecha y una línea debajo. */
 export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProps) {
   const { colors, spacing, motion } = useAppTheme();
+  const herramientasDev = useRanuraDev();
   const conAvance = progreso !== undefined;
   const avance = useSharedValue(progreso ?? 0);
 
@@ -63,7 +64,7 @@ export function BarraSuperior({ derecha, alVolver, progreso }: BarraSuperiorProp
           </AppText>
         </View>
         <View style={[styles.fila, { gap: spacing.lg }]}>
-          <VolverAlInicio />
+          {herramientasDev}
           <CambioDeModo />
           <AppText variant="caption" style={styles.derecha}>
             {derecha}

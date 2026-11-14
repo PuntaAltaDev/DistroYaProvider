@@ -6,11 +6,12 @@ import { FORM_INICIAL, type RegistroForm } from '@/features/registro/validacion'
  * - `borrador`: está completando el registro.
  * - `pendiente`: envió el registro y espera la aprobación del administrador.
  * - `aprobado`: ya puede usar el panel.
+ * - `rechazado`: el administrador pidió correcciones (`motivoRechazo`). Al corregir vuelve a `borrador`.
  *
  * Todavía no hay servidor: el estado se guarda en el teléfono. Cuando esté la API,
- * `pendiente` y `aprobado` los define el servidor y acá queda solo el borrador.
+ * `pendiente`, `aprobado` y `rechazado` los define el servidor y acá queda solo el borrador.
  */
-export type EstadoCuenta = 'borrador' | 'pendiente' | 'aprobado';
+export type EstadoCuenta = 'borrador' | 'pendiente' | 'aprobado' | 'rechazado';
 
 /** Cómo entró: con un código al email o con su cuenta de Google. */
 export type MetodoAcceso = 'email' | 'google';
@@ -30,6 +31,8 @@ export type Cuenta = {
   form: RegistroForm;
   /** Cuándo se envió el registro, en formato ISO. */
   fechaEnvio?: string;
+  /** Qué pidió corregir el administrador. Se borra al reenviar el registro. */
+  motivoRechazo?: string;
 };
 
 export const CUENTA_INICIAL: Cuenta = {
@@ -41,7 +44,7 @@ export const CUENTA_INICIAL: Cuenta = {
 
 /** La "v1" permite cambiar la forma de los datos más adelante sin romper lo ya guardado. */
 const CLAVE = 'cuenta.v1';
-const ESTADOS: readonly EstadoCuenta[] = ['borrador', 'pendiente', 'aprobado'];
+const ESTADOS: readonly EstadoCuenta[] = ['borrador', 'pendiente', 'aprobado', 'rechazado'];
 
 /** Lee la cuenta guardada. Si no hay nada, o está dañada, empieza de cero. */
 export async function cargarCuenta(): Promise<Cuenta> {
@@ -68,6 +71,7 @@ export async function cargarCuenta(): Promise<Cuenta> {
     paso,
     form,
     fechaEnvio: guardada.fechaEnvio,
+    motivoRechazo: typeof guardada.motivoRechazo === 'string' ? guardada.motivoRechazo : undefined,
   };
 }
 

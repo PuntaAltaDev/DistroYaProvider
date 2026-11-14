@@ -125,7 +125,11 @@ export function RegistroScreen() {
     setEnviando(true);
     setTimeout(() => {
       haptics.success();
-      actualizar({ estado: 'pendiente', fechaEnvio: new Date().toISOString() });
+      actualizar({
+        estado: 'pendiente',
+        fechaEnvio: new Date().toISOString(),
+        motivoRechazo: undefined,
+      });
     }, 1200);
   };
 
@@ -159,10 +163,19 @@ export function RegistroScreen() {
               ]}>
               <View style={{ gap: spacing.md }}>
                 <Titular lineas={lineas} acento={acento} clave={paso} />
-                <Animated.View key={`bajada-${paso}`} entering={FadeIn.delay(220).duration(400)}>
+                <Animated.View
+                  key={`bajada-${paso}`}
+                  entering={FadeIn.delay(220).duration(400)}
+                  style={{ gap: spacing.sm }}>
                   <AppText variant="subhead" color="textSecondary">
                     {bajada}
                   </AppText>
+                  {/* Si el perfil fue rechazado, lo que hay que corregir queda a la vista en cada paso. */}
+                  {cuenta.motivoRechazo ? (
+                    <AppText variant="footnote" color="danger">
+                      A corregir: {cuenta.motivoRechazo}
+                    </AppText>
+                  ) : null}
                 </Animated.View>
               </View>
 
@@ -180,7 +193,13 @@ export function RegistroScreen() {
 
         <View style={styles.barraInferior}>
           <ActionBar
-            label={esUltimo ? 'Enviar registro' : 'Siguiente'}
+            label={
+              !esUltimo
+                ? 'Siguiente'
+                : cuenta.motivoRechazo
+                  ? 'Reenviar registro'
+                  : 'Enviar registro'
+            }
             loading={enviando}
             onPress={continuar}
           />
