@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { RegistroForm } from '@/features/registro/validacion';
+import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import {
   diasRestantes,
   estadoDe,
@@ -18,22 +18,25 @@ import { PerfilScreen } from './perfil-screen';
 
 type Pantalla = 'inicio' | 'perfil' | 'plan' | 'lista';
 
-type PanelProveedorProps = {
-  form: RegistroForm;
-  /** La lista que subió en el registro, si la subió. */
-  listaInicial?: ArchivoLista;
-  /** Guarda los cambios del perfil. */
-  alGuardarPerfil: (form: RegistroForm) => void;
-};
-
 /**
- * El panel del proveedor ya aprobado: inicio con tres accesos (perfil, plan y lista de precios).
- * Por ahora el plan y el historial de listas son datos de prueba, hasta que esté la API.
+ * El panel del proveedor ya aprobado: inicio con tres accesos (perfil, plan y lista de precios). Por ahora el plan y el historial de listas son datos de prueba, hasta que esté la API.
  */
-export function PanelProveedor({ form, listaInicial, alGuardarPerfil }: PanelProveedorProps) {
+export function PanelProveedor() {
+  const { cuenta, actualizar } = useCuenta();
+  const form = cuenta.form;
+
   const [pantalla, setPantalla] = useState<Pantalla>('inicio');
   const [suscripcion] = useState(suscripcionDePrueba);
-  const [lista, setLista] = useState<ArchivoLista | undefined>(listaInicial);
+  // La lista que subió en el registro, si la subió.
+  const [lista, setLista] = useState<ArchivoLista | undefined>(() =>
+    form.catalogo && cuenta.fechaEnvio
+      ? {
+          nombre: form.catalogo.name,
+          tamano: form.catalogo.size,
+          fecha: new Date(cuenta.fechaEnvio),
+        }
+      : undefined,
+  );
   const [historial, setHistorial] = useState<ArchivoLista[]>(historialDePrueba);
 
   const volver = () => setPantalla('inicio');
@@ -45,7 +48,14 @@ export function PanelProveedor({ form, listaInicial, alGuardarPerfil }: PanelPro
   };
 
   if (pantalla === 'perfil') {
-    return <PerfilScreen form={form} alVolver={volver} alGuardar={alGuardarPerfil} />;
+    return (
+      <PerfilScreen
+        form={form}
+        alVolver={volver}
+        // Todavía no hay servidor: el perfil se guarda en el teléfono. Acá va la llamada a la API.
+        alGuardar={(nuevo) => actualizar({ form: nuevo })}
+      />
+    );
   }
   if (pantalla === 'plan') {
     return <SuscripcionScreen suscripcion={suscripcion} alVolver={volver} />;

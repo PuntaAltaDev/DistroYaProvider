@@ -38,13 +38,20 @@ function guardarAparte(uri: string, prefijo: string) {
   return destino.uri;
 }
 
-/** Borra las fotos que quedaron de antes, así la carpeta no crece sin control. */
-function limpiarCarpeta() {
+/**
+ * Borra las fotos guardadas. Se usa al elegir una foto nueva, para que la carpeta no crezca,
+ * y al eliminar la cuenta. Si algo falla no corta el flujo: queda un archivo de más.
+ */
+export function borrarImagenes() {
   if (enWeb) return;
-  const carpeta = new Directory(Paths.document, CARPETA);
-  if (!carpeta.exists) return;
-  for (const item of carpeta.list()) {
-    if (item instanceof File) item.delete();
+  try {
+    const carpeta = new Directory(Paths.document, CARPETA);
+    if (!carpeta.exists) return;
+    for (const item of carpeta.list()) {
+      if (item instanceof File) item.delete();
+    }
+  } catch (error) {
+    console.warn('No se pudieron borrar las fotos guardadas', error);
   }
 }
 
@@ -65,7 +72,7 @@ export async function prepararImagen(uri: string): Promise<ImagenLogo> {
   }).renderAsync();
   const guardada = await imagen.saveAsync({ format: SaveFormat.WEBP, compress: 0.9 });
   // Foto nueva: se borra lo que quedó de la anterior.
-  limpiarCarpeta();
+  borrarImagenes();
   return {
     uri: guardarAparte(guardada.uri, 'foto'),
     width: guardada.width,

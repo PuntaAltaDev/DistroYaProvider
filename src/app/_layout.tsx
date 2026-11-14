@@ -9,11 +9,16 @@ import {
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import { CuentaProvider } from '@/features/cuenta/cuenta-provider';
+import { cargarCuenta, type Cuenta } from '@/features/cuenta/cuenta';
 import { AppThemeProvider, useAppTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
+
+/** Lo que se lee del teléfono antes de mostrar la primera pantalla. */
+type Guardado = { cuenta: Cuenta };
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -23,9 +28,18 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
-  const ready = fontsLoaded || !!fontError;
+  const [guardado, setGuardado] = useState<Guardado | null>(null);
 
-  // La pantalla de inicio (splash) se oculta recién cuando la fuente está lista.
+  // Se lee la cuenta guardada mientras se cargan las fuentes. La lectura
+  // no falla: si no hay nada guardado, vuelve la cuenta vacía.
+  useEffect(() => {
+    cargarCuenta().then((cuenta) => setGuardado({ cuenta }));
+  }, []);
+
+  const ready = (fontsLoaded || !!fontError) && guardado !== null;
+
+  // La pantalla de inicio (splash) se oculta recién cuando todo está listo: así no se ve
+  // un destello del registro vacío antes de mostrar el panel.
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
   }, [ready]);
@@ -34,7 +48,9 @@ export default function RootLayout() {
 
   return (
     <AppThemeProvider initialMode="light">
-      <ThemedNavigation />
+      <CuentaProvider inicial={guardado.cuenta}>
+        <ThemedNavigation />
+      </CuentaProvider>
     </AppThemeProvider>
   );
 }

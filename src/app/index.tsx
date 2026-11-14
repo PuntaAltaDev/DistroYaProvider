@@ -1,6 +1,6 @@
-import { RegistroScreen } from '@/features/registro/registro-screen';
+import { PantallaInicial } from '@/features/cuenta/pantalla-inicial';
 
-/** Pantalla inicial: el registro del proveedor. */
+/** Pantalla inicial: según el estado del proveedor, el registro o su panel. */
 export default function Index() {
-  return <RegistroScreen />;
+  return <PantallaInicial />;
 }

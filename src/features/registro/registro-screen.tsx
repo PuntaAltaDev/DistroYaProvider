@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
-import { PanelProveedor } from '@/features/panel/panel-proveedor';
+import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
@@ -19,14 +19,7 @@ import {
   PasoRubros,
   type PasoProps,
 } from './pasos';
-import { RegistroExito } from './registro-exito';
-import {
-  FORM_INICIAL,
-  validarPaso,
-  type Errores,
-  type PasoId,
-  type RegistroForm,
-} from './validacion';
+import { validarPaso, type Errores, type PasoId, type RegistroForm } from './validacion';
 
 /** Las pantallas del registro, en orden. Una pregunta por pantalla. */
 const PASOS: {
@@ -82,25 +75,27 @@ const PASOS: {
 
 const dosCifras = (n: number) => String(n).padStart(2, '0');
 
+/**
+ * El registro, una pregunta por pantalla. Lo que se escribe y la pantalla en que se está
+ * se guardan en el teléfono (ver `features/cuenta`): si cierra la app, sigue donde estaba.
+ */
 export function RegistroScreen() {
   const { colors, spacing } = useAppTheme();
+  const { cuenta, actualizar } = useCuenta();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
 
-  const [paso, setPaso] = useState(0);
-  const [form, setForm] = useState<RegistroForm>(FORM_INICIAL);
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
-  const [enviado, setEnviado] = useState(false);
-  const [enPanel, setEnPanel] = useState(false);
-  const [fechaEnvio, setFechaEnvio] = useState<Date>();
 
+  const form = cuenta.form;
   const total = PASOS.length;
+  const paso = Math.min(cuenta.paso, total - 1);
   const esUltimo = paso === total - 1;
   const { id, lineas, acento, bajada, Componente } = PASOS[paso];
 
   /** Cambia datos del formulario y borra el error de los campos que se tocaron. */
   const cambiar = (cambios: Partial<RegistroForm>) => {
-    setForm((actual) => ({ ...actual, ...cambios }));
+    actualizar((actual) => ({ form: { ...actual.form, ...cambios } }));
     setErrores((actuales) => {
       const siguientes = { ...actuales };
       for (const campo of Object.keys(cambios)) delete siguientes[campo as keyof Errores];
@@ -110,7 +105,7 @@ export function RegistroScreen() {
 
   const irA = (destino: number) => {
     setErrores({});
-    setPaso(destino);
+    actualizar({ paso: destino });
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
@@ -126,34 +121,13 @@ export function RegistroScreen() {
       return;
     }
     // Todavía no hay servidor: se simula el envío. Acá va a ir la llamada a la API de Seba.
+    // Al pasar a `pendiente`, la pantalla inicial muestra "Listo. Ya estás en camino".
     setEnviando(true);
     setTimeout(() => {
-      setEnviando(false);
-      setEnviado(true);
-      setFechaEnvio(new Date());
       haptics.success();
+      actualizar({ estado: 'pendiente', fechaEnvio: new Date().toISOString() });
     }, 1200);
   };
-
-  if (enviado && enPanel) {
-    return (
-      <PanelProveedor
-        form={form}
-        listaInicial={
-          form.catalogo && fechaEnvio
-            ? { nombre: form.catalogo.name, tamano: form.catalogo.size, fecha: fechaEnvio }
-            : undefined
-        }
-        // Todavía no hay servidor: el perfil se guarda en la app. Acá va a ir la llamada a la API de Seba.
-        alGuardarPerfil={setForm}
-      />
-    );
-  }
-
-  if (enviado) {
-    // Simulación: el botón del final abre el panel, como si el admin ya lo hubiera aprobado.
-    return <RegistroExito nombre={form.razonSocial.trim()} alRevisar={() => setEnPanel(true)} />;
-  }
 
   return (
     <View style={[styles.flex, { backgroundColor: colors.background }]}>
