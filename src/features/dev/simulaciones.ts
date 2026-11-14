@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 
+import { RUTA_AVISOS } from '@/features/avisos/avisos';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { aGuardada, DIA } from '@/features/suscripcion/datos';
 import { programarAviso } from '@/lib/notificaciones';
@@ -57,6 +58,7 @@ export function useSimulaciones(): Simulacion[] {
             titulo: 'Tu plan vence en 7 días',
             texto: 'Aviso de prueba.',
             fecha: new Date(Date.now() + 5000),
+            url: RUTA_AVISOS,
           }),
       });
     }

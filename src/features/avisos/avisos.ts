@@ -82,6 +82,9 @@ export const sinLeer = (avisos: Aviso[], leidos: string[] = []) =>
 /** Ids de los recordatorios del teléfono (para cancelarlos aunque ya no correspondan). */
 export const IDS_RECORDATORIOS = ['plan-por-vencer', 'plan-vencido'] as const;
 
+/** Adonde lleva un aviso del teléfono al tocarlo: la bandeja. */
+export const RUTA_AVISOS = '/panel/avisos';
+
 /** Hora del día a la que llegan los recordatorios. */
 const HORA_RECORDATORIO = 10;
 
@@ -101,12 +104,14 @@ export function recordatoriosDelPlan(fin: Date, ahora = new Date()): AvisoProgra
       titulo: `Tu plan vence en ${DIAS_AVISO} días`,
       texto: 'Renovalo para que tu perfil siga apareciendo en el buscador.',
       fecha: antes,
+      url: RUTA_AVISOS,
     },
     {
       id: 'plan-vencido',
       titulo: 'Tu plan venció',
       texto: 'Tu perfil dejó de aparecer en el buscador. Renovalo desde la app.',
       fecha: vencido,
+      url: RUTA_AVISOS,
     },
   ];
   return recordatorios.filter((r) => r.fecha.getTime() > ahora.getTime());

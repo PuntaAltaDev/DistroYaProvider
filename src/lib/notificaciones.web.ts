@@ -21,3 +21,7 @@ export async function programarAviso(aviso: AvisoProgramado) {
 }
 
 export async function cancelarAviso(_id: string) {}
+
+export function alTocarAviso(_abrir: (url: string) => void) {
+  return () => {};
+}

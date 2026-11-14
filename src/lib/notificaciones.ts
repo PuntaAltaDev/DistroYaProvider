@@ -75,16 +75,23 @@ export async function pedirPermiso(): Promise<boolean> {
   }
 }
 
-export type AvisoProgramado = { id: string; titulo: string; texto: string; fecha: Date };
+export type AvisoProgramado = {
+  id: string;
+  titulo: string;
+  texto: string;
+  fecha: Date;
+  /** Ruta de la app que se abre al tocar el aviso. */
+  url: string;
+};
 
 /** Programa un aviso para una fecha. Si ya había uno con el mismo id, lo reemplaza. */
-export async function programarAviso({ id, titulo, texto, fecha }: AvisoProgramado) {
+export async function programarAviso({ id, titulo, texto, fecha, url }: AvisoProgramado) {
   try {
     await configurar();
     await Notifications.cancelScheduledNotificationAsync(id);
     await Notifications.scheduleNotificationAsync({
       identifier: id,
-      content: { title: titulo, body: texto },
+      content: { title: titulo, body: texto, data: { url } },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: fecha,
@@ -101,5 +108,34 @@ export async function cancelarAviso(id: string) {
     await Notifications.cancelScheduledNotificationAsync(id);
   } catch (error) {
     console.warn(`No se pudo cancelar el aviso "${id}"`, error);
+  }
+}
+
+function urlDe(respuesta: Notifications.NotificationResponse | null) {
+  const url = respuesta?.notification.request.content.data?.url;
+  return typeof url === 'string' ? url : undefined;
+}
+
+/**
+ * Llama a `abrir` con la ruta del aviso que el usuario toca. También cubre el aviso que abrió la
+ * app estando cerrada. Devuelve la función para dejar de escuchar.
+ */
+export function alTocarAviso(abrir: (url: string) => void) {
+  try {
+    const inicial = urlDe(Notifications.getLastNotificationResponse());
+    if (inicial) {
+      Notifications.clearLastNotificationResponse();
+      abrir(inicial);
+    }
+    const suscripcion = Notifications.addNotificationResponseReceivedListener((respuesta) => {
+      const url = urlDe(respuesta);
+      if (!url) return;
+      Notifications.clearLastNotificationResponse();
+      abrir(url);
+    });
+    return () => suscripcion.remove();
+  } catch (error) {
+    console.warn('No se pudo escuchar los toques en los avisos', error);
+    return () => {};
   }
 }
