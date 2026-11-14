@@ -74,7 +74,7 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 | Planes y precios               | `PLANES` en `features/suscripcion/planes.ts`              | Planes de la API                                       |
 | Pago del plan                  | `pagar` en `features/suscripcion/planes-screen.tsx`       | Mercado Pago a través del backend                      |
 | Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`    | Historial de listas de la API                          |
-| Envío del registro             | `continuar` en `features/registro/registro-screen.tsx`    | Alta del proveedor en la API                           |
+| Envío del registro             | `alEnviar` en `app/registro.tsx`                          | Alta del proveedor en la API                           |
 | Aprobación o rechazo           | Simulador en `features/dev/simulaciones.ts`               | Estado y motivo que devuelve la API                    |
 | Avisos de la bandeja           | `avisosDe` en `features/avisos/avisos.ts`                 | Avisos de la API (y push)                              |
 | Textos legales                 | `features/legal/textos.ts` (borrador)                     | Textos revisados por un abogado                        |
@@ -89,7 +89,6 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 
 Cosas que hoy no cumplen del todo las reglas de arriba:
 
-- `cuenta` guarda el formulario de `registro` y `registro` usa a `cuenta`: no hay ciclo de archivos, pero las dos carpetas se necesitan entre sí.
 - Las pantallas no tienen pruebas automáticas todavía (solo las reglas del negocio). Para recorrer el flujo en el teléfono, Expo recomienda pruebas de punta a punta con Maestro.
 
 ## Decisiones

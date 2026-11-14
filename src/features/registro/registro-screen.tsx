@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionBar } from '@/components/ui/action-bar';
 import { AppText } from '@/components/ui/app-text';
-import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { useAtras } from '@/lib/atras';
 import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
@@ -76,27 +75,44 @@ const PASOS: {
 
 const dosCifras = (n: number) => String(n).padStart(2, '0');
 
+type RegistroScreenProps = {
+  form: RegistroForm;
+  /** Pantalla del registro en la que está (empieza en 0). */
+  paso: number;
+  /** Si el perfil fue rechazado, lo que hay que corregir. */
+  motivoRechazo?: string;
+  alCambiar: (cambios: Partial<RegistroForm>) => void;
+  alIrAPaso: (paso: number) => void;
+  /** Envía el registro ya validado. Acá va a ir la llamada a la API de Seba. */
+  alEnviar: () => Promise<void>;
+};
+
 /**
- * El registro, una pregunta por pantalla. Lo que se escribe y la pantalla en que se está
- * se guardan en el teléfono (ver `features/cuenta`): si cierra la app, sigue donde estaba.
+ * El registro, una pregunta por pantalla. No sabe dónde se guarda: recibe el formulario y el
+ * paso, y avisa los cambios (la ruta los guarda en la cuenta, así sigue donde estaba).
  */
-export function RegistroScreen() {
+export function RegistroScreen({
+  form,
+  paso: pasoGuardado,
+  motivoRechazo,
+  alCambiar,
+  alIrAPaso,
+  alEnviar,
+}: RegistroScreenProps) {
   const { colors, spacing } = useAppTheme();
-  const { cuenta, actualizar } = useCuenta();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
 
   const [errores, setErrores] = useState<Errores>({});
   const [enviando, setEnviando] = useState(false);
 
-  const form = cuenta.form;
   const total = PASOS.length;
-  const paso = Math.min(cuenta.paso, total - 1);
+  const paso = Math.min(pasoGuardado, total - 1);
   const esUltimo = paso === total - 1;
   const { id, lineas, acento, bajada, Componente } = PASOS[paso];
 
   /** Cambia datos del formulario y borra el error de los campos que se tocaron. */
   const cambiar = (cambios: Partial<RegistroForm>) => {
-    actualizar((actual) => ({ form: { ...actual.form, ...cambios } }));
+    alCambiar(cambios);
     setErrores((actuales) => {
       const siguientes = { ...actuales };
       for (const campo of Object.keys(cambios)) delete siguientes[campo as keyof Errores];
@@ -106,7 +122,7 @@ export function RegistroScreen() {
 
   const irA = (destino: number) => {
     setErrores({});
-    actualizar({ paso: destino });
+    alIrAPaso(destino);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
@@ -114,7 +130,8 @@ export function RegistroScreen() {
   const anterior = paso > 0 ? () => irA(paso - 1) : undefined;
   useAtras(anterior);
 
-  const continuar = () => {
+  const continuar = async () => {
+    if (enviando) return;
     const encontrados = validarPaso(id, form);
     if (Object.keys(encontrados).length > 0) {
       setErrores(encontrados);
@@ -125,17 +142,13 @@ export function RegistroScreen() {
       irA(paso + 1);
       return;
     }
-    // Todavía no hay servidor: se simula el envío. Acá va a ir la llamada a la API de Seba.
-    // Al pasar a `pendiente`, la pantalla inicial muestra "Listo. Ya estás en camino".
     setEnviando(true);
-    setTimeout(() => {
+    try {
+      await alEnviar();
       haptics.success();
-      actualizar({
-        estado: 'pendiente',
-        fechaEnvio: new Date().toISOString(),
-        motivoRechazo: undefined,
-      });
-    }, 1200);
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -176,9 +189,9 @@ export function RegistroScreen() {
                     {bajada}
                   </AppText>
                   {/* Si el perfil fue rechazado, lo que hay que corregir queda a la vista en cada paso. */}
-                  {cuenta.motivoRechazo ? (
+                  {motivoRechazo ? (
                     <AppText variant="footnote" color="danger">
-                      A corregir: {cuenta.motivoRechazo}
+                      A corregir: {motivoRechazo}
                     </AppText>
                   ) : null}
                 </Animated.View>
@@ -199,11 +212,7 @@ export function RegistroScreen() {
         <View style={styles.barraInferior}>
           <ActionBar
             label={
-              !esUltimo
-                ? 'Siguiente'
-                : cuenta.motivoRechazo
-                  ? 'Reenviar registro'
-                  : 'Enviar registro'
+              !esUltimo ? 'Siguiente' : motivoRechazo ? 'Reenviar registro' : 'Enviar registro'
             }
             loading={enviando}
             onPress={continuar}
