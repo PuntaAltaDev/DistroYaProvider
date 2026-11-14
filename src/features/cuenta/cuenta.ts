@@ -12,9 +12,16 @@ import { FORM_INICIAL, type RegistroForm } from '@/features/registro/validacion'
  */
 export type EstadoCuenta = 'borrador' | 'pendiente' | 'aprobado';
 
+/** Cómo entró: con un código al email o con su cuenta de Google. */
+export type MetodoAcceso = 'email' | 'google';
+
 export type Cuenta = {
-  /** Ya tocó "Comenzar" en la pantalla de bienvenida. */
+  /** Ya confirmó su acceso (email o Google) en las pantallas de bienvenida. */
   iniciada: boolean;
+  /** Cómo entró. Falta en lo guardado antes de que existiera el acceso. */
+  metodo?: MetodoAcceso;
+  /** Email con el que entró. Con Google todavía no se conoce: lo va a dar la API. */
+  email?: string;
   estado: EstadoCuenta;
   /** Pantalla del registro en la que quedó (empieza en 0). */
   paso: number;
@@ -48,6 +55,9 @@ export async function cargarCuenta(): Promise<Cuenta> {
     // Lo guardado antes de que existiera la bienvenida no trae este dato: si ya hay avance,
     // se da por iniciada para no mostrarle la bienvenida a alguien que ya empezó.
     iniciada: guardada.iniciada ?? (estado !== 'borrador' || paso > 0 || !!form.razonSocial.trim()),
+    metodo:
+      guardada.metodo === 'email' || guardada.metodo === 'google' ? guardada.metodo : undefined,
+    email: typeof guardada.email === 'string' ? guardada.email : undefined,
     estado,
     paso,
     form,

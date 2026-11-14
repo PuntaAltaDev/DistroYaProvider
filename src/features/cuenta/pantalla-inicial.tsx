@@ -1,4 +1,4 @@
-import { BienvenidaScreen } from '@/features/bienvenida/bienvenida-screen';
+import { Acceso } from '@/features/acceso/acceso';
 import { PanelProveedor } from '@/features/panel/panel-proveedor';
 import { RegistroExito } from '@/features/registro/registro-exito';
 import { RegistroScreen } from '@/features/registro/registro-screen';
@@ -22,9 +22,7 @@ export function PantallaInicial() {
     );
   }
 
-  if (!cuenta.iniciada) {
-    return <BienvenidaScreen alComenzar={() => actualizar({ iniciada: true })} />;
-  }
+  if (!cuenta.iniciada) return <Acceso />;
 
   return <RegistroScreen />;
 }

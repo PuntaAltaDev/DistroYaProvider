@@ -13,14 +13,11 @@ import { palette } from '@/theme/tokens';
 const PUNTOS = ['Armá tu perfil', 'Subí la lista de precios', 'Te encuentran por rubro'];
 
 type BienvenidaScreenProps = {
-  alComenzar: () => void;
+  alEmpezar: () => void;
 };
 
-/**
- * Primera pantalla de la app: el logo, el nombre, la frase y los tres pasos que siguen.
- * El botón lleva al registro. Cuando esté el login, pasa a ser "Continuar con tu email".
- */
-export function BienvenidaScreen({ alComenzar }: BienvenidaScreenProps) {
+/** Primera pantalla de la app: el logo, el nombre, la frase y los tres pasos que siguen. */
+export function BienvenidaScreen({ alEmpezar }: BienvenidaScreenProps) {
   const { colors, scheme, spacing } = useAppTheme();
 
   return (
@@ -75,7 +72,7 @@ export function BienvenidaScreen({ alComenzar }: BienvenidaScreenProps) {
       </SafeAreaView>
 
       <View style={styles.column}>
-        <ActionBar label="Comenzar" onPress={alComenzar} />
+        <ActionBar label="Empezar" onPress={alEmpezar} />
       </View>
     </View>
   );

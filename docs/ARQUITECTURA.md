@@ -21,7 +21,8 @@ src/
   components/ui/  Piezas reutilizables sin lógica de negocio: texto, campo, chip, ícono, barra de acción,
                   barra superior y titular (editorial) y marco de pantalla (marco).
   features/       Una carpeta por tema de negocio, con sus pantallas y su lógica.
-    bienvenida/   Primera pantalla de la app: logo, nombre, frase y botón para comenzar.
+    acceso/       Cómo se entra: bienvenida → registro (Google, o email y su código en la misma pantalla).
+    bienvenida/   Primera pantalla de la app: logo, nombre, frase y el botón "Empezar".
     registro/     Alta del proveedor: pasos, validación, logo y dirección.
     panel/        Lo que ve el proveedor ya aprobado: inicio, perfil y lista de precios.
     suscripcion/  Plan del proveedor y lista de precios con historial.
@@ -85,6 +86,6 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **El borrador y el estado se guardan en SQLite, sin cifrar.** Son datos del negocio, no secretos. Las claves y tokens del login van en `expo-secure-store`.
 - **El modo claro/oscuro es una preferencia aparte de la cuenta:** eliminar la cuenta no la borra.
 - **El logo es el carrito** (`components/ui/logo.tsx`). El ícono, el splash y el favicon salen de `scripts/generar-iconos.mjs` (`npm run iconos`); si se cambia el dibujo, se cambia en los dos lugares. Frase: "Proveedores y comercios, conectados."
-- **La bienvenida se muestra una sola vez** (`iniciada` en la cuenta) y su botón lleva al registro. Cuando esté el login, pasa a ser "Continuar con tu email" y se agrega "Ya tengo cuenta".
+- **La bienvenida se muestra una sola vez** (`iniciada` en la cuenta). Se entra con el email (código de 6 números) o con Google. **Ambos están simulados**: cualquier código sirve y Google entra sin pedir nada. Con el login de Seba se cambia lo que hacen `alEnviarCodigo`, `alConfirmar` y `alGoogle` en `features/acceso/acceso.tsx`; las pantallas quedan igual. La cuenta guarda `metodo` y `email` (con Google, el email lo va a dar la API). Registrarse e iniciar sesión son la misma pantalla: con la API, la respuesta decide si sigue el registro del negocio, la espera o el panel.
 - **"Cerrar sesión" se hace junto con el login:** sin login no hay sesión que cerrar.
 - **Sin pantallas de carga, error o sin conexión todavía** en lo que depende de la API: se hacen cuando exista el contrato de la API, para no escribir código a ciegas.
