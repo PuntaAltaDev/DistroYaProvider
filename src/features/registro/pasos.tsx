@@ -13,6 +13,7 @@ import { RUBROS } from '@/data/rubros';
 import { haptics } from '@/lib/haptics';
 import { palette, useAppTheme } from '@/theme';
 
+import { CampoDireccion } from './campo-direccion';
 import { AJUSTE_INICIAL, necesitaAjuste, prepararImagen, recortarLogo, type AjusteLogo } from './logo';
 import { LogoEditor } from './logo-editor';
 import { formatearTamano, limpiarTelefono, type Errores, type RegistroForm } from './validacion';
@@ -233,15 +234,12 @@ export function PasoContacto({ form, errores, cambiar, alTerminar }: PasoProps) 
 
 export function PasoDireccion({ form, errores, cambiar, alTerminar }: PasoProps) {
   return (
-    <LineField
-      label="Dirección"
+    <CampoDireccion
       autoFocus
-      placeholder="Calle, número y localidad"
-      value={form.direccion}
-      onChangeText={(direccion) => cambiar({ direccion })}
+      valor={form.direccion}
+      lugar={form.lugar}
       error={errores.direccion}
-      autoCapitalize="words"
-      autoComplete="street-address"
+      alCambiar={cambiar}
       returnKeyType="next"
       onSubmitEditing={alTerminar}
     />

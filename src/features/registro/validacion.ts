@@ -1,3 +1,5 @@
+import { PLACES_ACTIVO, type Lugar } from '@/lib/places';
+
 import type { AjusteLogo, ImagenLogo } from './logo';
 
 /** Datos que completa el proveedor en el registro. */
@@ -11,6 +13,8 @@ export type RegistroForm = {
   whatsapp: string;
   telefono: string;
   direccion: string;
+  /** La dirección elegida de la lista de Google, con localidad, provincia y coordenadas. */
+  lugar?: Lugar;
   rubros: string[];
   catalogo?: { name: string; size?: number; uri: string };
 };
@@ -86,8 +90,15 @@ export function validarPaso(paso: PasoId, form: RegistroForm): Errores {
     }
   }
 
-  if (paso === 'direccion' && form.direccion.trim().length < 5) {
-    errores.direccion = 'Escribí la calle y el número.';
+  if (paso === 'direccion') {
+    if (form.direccion.trim().length < 5) {
+      errores.direccion = 'Escribí la calle y el número.';
+    } else if (PLACES_ACTIVO && !form.lugar) {
+      // Con las sugerencias activas, la dirección tiene que salir de la lista: ahí viene la localidad.
+      errores.direccion = 'Elegí una opción de la lista, así queda la localidad.';
+    } else if (form.lugar && (!form.lugar.calle || !form.lugar.localidad)) {
+      errores.direccion = 'Esa dirección está incompleta. Elegí una con calle y localidad.';
+    }
   }
 
   if (paso === 'rubros' && form.rubros.length === 0) {

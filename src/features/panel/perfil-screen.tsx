@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
 import { LineField } from '@/components/ui/line-field';
+import { CampoDireccion } from '@/features/registro/campo-direccion';
 import { Titular } from '@/features/registro/editorial';
 import { PasoLogo, PasoRubros } from '@/features/registro/pasos';
 import {
@@ -124,15 +125,12 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
           returnKeyType="next"
           onSubmitEditing={() => direccionRef.current?.focus()}
         />
-        <LineField
+        <CampoDireccion
           inputRef={direccionRef}
-          label="Dirección"
-          placeholder="Calle, número y localidad"
-          value={borrador.direccion}
-          onChangeText={(direccion) => cambiar({ direccion })}
+          valor={borrador.direccion}
+          lugar={borrador.lugar}
           error={errores.direccion}
-          autoCapitalize="words"
-          autoComplete="street-address"
+          alCambiar={cambiar}
         />
       </Animated.View>
 
