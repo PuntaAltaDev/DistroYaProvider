@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { useEffect, useRef, useState, type ComponentRef, type RefObject } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -16,14 +16,16 @@ import Animated, {
 import { fonts, useAppTheme } from '@/theme';
 
 import { AppText } from './app-text';
-import type { TextFieldRef } from './text-field';
+
+/** Referencia al campo de texto, para poder pasar el foco de un campo al siguiente. */
+export type LineFieldRef = RefObject<ComponentRef<typeof TextInput> | null>;
 
 type LineFieldProps = Omit<TextInputProps, 'style'> & {
   /** Etiqueta chica en mayúsculas, arriba del texto. */
   label: string;
   error?: string;
   helper?: string;
-  inputRef?: TextFieldRef;
+  inputRef?: LineFieldRef;
 };
 
 /**

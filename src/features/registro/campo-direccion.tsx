@@ -3,8 +3,7 @@ import { Pressable, StyleSheet, View, type TextInputProps } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
-import { LineField } from '@/components/ui/line-field';
-import type { TextFieldRef } from '@/components/ui/text-field';
+import { LineField, type LineFieldRef } from '@/components/ui/line-field';
 import { haptics } from '@/lib/haptics';
 import {
   buscarDirecciones,
@@ -26,7 +25,7 @@ type CampoDireccionProps = Pick<TextInputProps, 'autoFocus' | 'returnKeyType' | 
   error?: string;
   /** Cada cambio informa el texto y la dirección elegida (vacía si se volvió a escribir). */
   alCambiar: (cambios: { direccion: string; lugar?: Lugar }) => void;
-  inputRef?: TextFieldRef;
+  inputRef?: LineFieldRef;
 };
 
 /**
