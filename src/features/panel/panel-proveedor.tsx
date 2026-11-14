@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { AjustesScreen } from '@/features/ajustes/ajustes-screen';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import {
   diasRestantes,
@@ -16,10 +17,11 @@ import { InicioScreen } from './inicio-screen';
 import { ListaScreen } from './lista-screen';
 import { PerfilScreen } from './perfil-screen';
 
-type Pantalla = 'inicio' | 'perfil' | 'plan' | 'lista';
+type Pantalla = 'inicio' | 'perfil' | 'plan' | 'lista' | 'ajustes';
 
 /**
- * El panel del proveedor ya aprobado: inicio con tres accesos (perfil, plan y lista de precios). Por ahora el plan y el historial de listas son datos de prueba, hasta que esté la API.
+ * El panel del proveedor ya aprobado: inicio con cuatro accesos (perfil, plan, lista de precios
+ * y ajustes). Por ahora el plan y el historial de listas son datos de prueba, hasta que esté la API.
  */
 export function PanelProveedor() {
   const { cuenta, actualizar } = useCuenta();
@@ -65,6 +67,9 @@ export function PanelProveedor() {
       <ListaScreen actual={lista} historial={historial} alSubir={subirLista} alVolver={volver} />
     );
   }
+  if (pantalla === 'ajustes') {
+    return <AjustesScreen alVolver={volver} />;
+  }
 
   const estado = estadoDe(suscripcion);
   const dias = diasRestantes(suscripcion);
@@ -94,6 +99,11 @@ export function PanelProveedor() {
             : 'Todavía no subiste tu lista',
           aviso: !lista,
           onPress: () => setPantalla('lista'),
+        },
+        {
+          titulo: 'Ajustes',
+          detalle: 'Apariencia y cuenta',
+          onPress: () => setPantalla('ajustes'),
         },
       ]}
     />

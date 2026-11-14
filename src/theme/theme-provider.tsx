@@ -14,8 +14,8 @@ import {
 
 /**
  * `light` y `dark` fuerzan un modo; `system` sigue al teléfono.
- * Por ahora la app arranca en claro. El botón de modo oscuro
- * solo tiene que llamar a `setMode('dark')`.
+ * El modo se cambia con `setMode` (desde Ajustes) y, si se pasa `onModeChange`, se avisa
+ * para poder guardarlo.
  */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -36,9 +36,12 @@ const ThemeContext = createContext<ThemeValue | null>(null);
 export function AppThemeProvider({
   children,
   initialMode = 'light',
+  onModeChange,
 }: {
   children: ReactNode;
   initialMode?: ThemeMode;
+  /** Se llama cada vez que cambia el modo. Tiene que ser una función fija (no una nueva por render). */
+  onModeChange?: (mode: ThemeMode) => void;
 }) {
   const systemScheme = useSystemColorScheme();
   const [mode, setMode] = useState<ThemeMode>(initialMode);
@@ -49,7 +52,10 @@ export function AppThemeProvider({
   const value = useMemo<ThemeValue>(
     () => ({
       mode,
-      setMode,
+      setMode: (nuevo) => {
+        setMode(nuevo);
+        onModeChange?.(nuevo);
+      },
       scheme,
       colors: colors[scheme],
       typography,
@@ -58,7 +64,7 @@ export function AppThemeProvider({
       sizes,
       motion,
     }),
-    [mode, scheme],
+    [mode, scheme, onModeChange],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

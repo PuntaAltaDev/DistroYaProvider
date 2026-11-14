@@ -13,12 +13,13 @@ import { useEffect, useState } from 'react';
 
 import { CuentaProvider } from '@/features/cuenta/cuenta-provider';
 import { cargarCuenta, type Cuenta } from '@/features/cuenta/cuenta';
-import { AppThemeProvider, useAppTheme } from '@/theme';
+import { cargarModo, guardarModo } from '@/lib/ajustes';
+import { AppThemeProvider, useAppTheme, type ThemeMode } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
 /** Lo que se lee del teléfono antes de mostrar la primera pantalla. */
-type Guardado = { cuenta: Cuenta };
+type Guardado = { cuenta: Cuenta; modo: ThemeMode };
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -30,10 +31,12 @@ export default function RootLayout() {
   });
   const [guardado, setGuardado] = useState<Guardado | null>(null);
 
-  // Se lee la cuenta guardada mientras se cargan las fuentes. La lectura
-  // no falla: si no hay nada guardado, vuelve la cuenta vacía.
+  // Se lee lo guardado (cuenta y modo) mientras se cargan las fuentes. Ninguna de las dos
+  // lecturas falla: si no hay nada, vuelven los valores iniciales.
   useEffect(() => {
-    cargarCuenta().then((cuenta) => setGuardado({ cuenta }));
+    Promise.all([cargarCuenta(), cargarModo()]).then(([cuenta, modo]) =>
+      setGuardado({ cuenta, modo }),
+    );
   }, []);
 
   const ready = (fontsLoaded || !!fontError) && guardado !== null;
@@ -47,7 +50,7 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <AppThemeProvider initialMode="light">
+    <AppThemeProvider initialMode={guardado.modo} onModeChange={guardarModo}>
       <CuentaProvider inicial={guardado.cuenta}>
         <ThemedNavigation />
       </CuentaProvider>
