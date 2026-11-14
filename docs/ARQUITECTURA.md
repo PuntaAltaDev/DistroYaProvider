@@ -23,8 +23,10 @@ src/
     registro/     Alta del proveedor: pasos, validación, logo y dirección.
     panel/        Lo que ve el proveedor ya aprobado: inicio, perfil y lista de precios.
     suscripcion/  Plan del proveedor y lista de precios con historial.
+    cuenta/       Estado del proveedor (borrador, pendiente, aprobado) guardado en el teléfono, y qué pantalla abrir.
+    ajustes/      Apariencia (claro/oscuro) y eliminar cuenta.
   data/           Datos de ejemplo (se reemplazan por la API).
-  lib/            Servicios y ayudas sin pantalla (Google Places, vibración).
+  lib/            Servicios y ayudas sin pantalla (Google Places, almacén de datos, ajustes, vibración).
   theme/          Colores, tipografía, espacios y animaciones.
 ```
 
@@ -50,16 +52,18 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 
 ## Datos de prueba que se reemplazan con la API
 
-| Qué                         | Dónde                                                     | Se reemplaza por                         |
-| --------------------------- | --------------------------------------------------------- | ---------------------------------------- |
-| Rubros                      | `src/data/rubros.ts`                                      | Tags de la API                           |
-| Plan del proveedor          | `suscripcionDePrueba` en `features/suscripcion/datos.ts`  | Suscripción del proveedor                |
-| Historial de listas         | `historialDePrueba` en `features/suscripcion/datos.ts`    | Historial de listas de la API            |
-| Envío del registro          | `continuar` en `features/registro/registro-screen.tsx`    | Alta del proveedor en la API             |
-| Aprobación del proveedor    | "Revisar mis datos" en `registro-exito.tsx`               | Estado real que devuelve la API          |
-| Guardado del perfil         | `alGuardarPerfil` en `features/panel/panel-proveedor.tsx` | Actualización del perfil en la API       |
-| Búsqueda de direcciones     | `src/lib/places.ts` (la app habla directo con Google)     | Llamadas al backend, sin clave en la app |
-| Logo y lista en el teléfono | `features/registro/logo.ts`                               | Subida a Blob Storage                    |
+| Qué                            | Dónde                                                          | Se reemplaza por                                       |
+| ------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------ |
+| Rubros                         | `src/data/rubros.ts`                                           | Tags de la API                                         |
+| Plan del proveedor             | `suscripcionDePrueba` en `features/suscripcion/datos.ts`       | Suscripción del proveedor                              |
+| Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`         | Historial de listas de la API                          |
+| Envío del registro             | `continuar` en `features/registro/registro-screen.tsx`         | Alta del proveedor en la API                           |
+| Aprobación del proveedor       | `alRevisar` en `features/cuenta/pantalla-inicial.tsx`          | Estado real que devuelve la API                        |
+| Estado y borrador de la cuenta | `features/cuenta/` (se guarda en el teléfono)                  | Borrador local y estado desde la API                   |
+| Guardado del perfil            | `actualizar({ form })` en `features/panel/panel-proveedor.tsx` | Actualización del perfil en la API                     |
+| Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx`      | Baja de la cuenta en la API, y después borrar lo local |
+| Búsqueda de direcciones        | `src/lib/places.ts` (la app habla directo con Google)          | Llamadas al backend, sin clave en la app               |
+| Logo y lista en el teléfono    | `features/registro/logo.ts`                                    | Subida a Blob Storage                                  |
 
 ## Deudas conocidas
 
@@ -67,6 +71,8 @@ Cosas que hoy no cumplen las reglas de arriba y se van a ordenar en su propio PR
 
 - `features/registro/editorial.tsx` (barra superior y titular) lo usan también `panel` y `suscripcion`: tiene que pasar a `components/ui/`.
 - `features/panel/marco.tsx` (esqueleto de pantalla) lo usa `suscripcion`, y `panel` usa a `suscripcion`: hay un ciclo. También pasa a `components/ui/`.
+- `features/ajustes` también usa `panel/marco` y `registro/editorial` (mismo caso que arriba).
+- `cuenta` guarda el formulario de `registro` y `registro` usa a `cuenta`: no hay ciclo de archivos, pero las dos carpetas se necesitan entre sí.
 - Las pantallas no tienen pruebas automáticas todavía.
 
 ## Decisiones
@@ -75,4 +81,7 @@ Cosas que hoy no cumplen las reglas de arriba y se van a ordenar en su propio PR
 - **La dirección sale de la lista de Google.** Así siempre queda la localidad y la provincia, y se guardan las coordenadas para buscar proveedores cerca.
 - **La foto se mueve y se agranda dentro del círculo** en lugar de recortarse sola: solo el proveedor sabe qué parte quiere mostrar.
 - **El logo se guarda en la carpeta de documentos de la app**, no en el caché: el teléfono puede vaciar el caché cuando necesita lugar.
+- **El borrador y el estado se guardan en SQLite, sin cifrar.** Son datos del negocio, no secretos. Las claves y tokens del login van en `expo-secure-store`.
+- **El modo claro/oscuro es una preferencia aparte de la cuenta:** eliminar la cuenta no la borra.
+- **"Cerrar sesión" se hace junto con el login:** sin login no hay sesión que cerrar.
 - **Sin pantallas de carga, error o sin conexión todavía** en lo que depende de la API: se hacen cuando exista el contrato de la API, para no escribir código a ciegas.
