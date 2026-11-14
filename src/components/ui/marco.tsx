@@ -11,7 +11,7 @@ type MarcoProps = {
   derecha: string;
   alVolver?: () => void;
   /** Botón negro de abajo. Si no está, la pantalla no lleva barra inferior. */
-  accion?: { label: string; onPress: () => void };
+  accion?: { label: string; onPress: () => void; loading?: boolean };
   children: ReactNode;
 };
 
@@ -41,7 +41,7 @@ export function Marco({ derecha, alVolver, accion, children }: MarcoProps) {
 
       {accion ? (
         <View style={styles.barraInferior}>
-          <ActionBar label={accion.label} onPress={accion.onPress} />
+          <ActionBar label={accion.label} onPress={accion.onPress} loading={accion.loading} />
         </View>
       ) : null}
     </KeyboardAvoidingView>

@@ -1,5 +1,6 @@
 import { borrar, guardar, leer } from '@/lib/almacen';
 import { FORM_INICIAL, type RegistroForm } from '@/features/registro/validacion';
+import { aGuardada, desdeGuardada, type SuscripcionGuardada } from '@/features/suscripcion/datos';
 
 /**
  * En qué punto está el proveedor:
@@ -33,6 +34,8 @@ export type Cuenta = {
   fechaEnvio?: string;
   /** Qué pidió corregir el administrador. Se borra al reenviar el registro. */
   motivoRechazo?: string;
+  /** Plan contratado. Falta hasta que elige el primero (después de ser aprobado). */
+  suscripcion?: SuscripcionGuardada;
 };
 
 export const CUENTA_INICIAL: Cuenta = {
@@ -55,6 +58,7 @@ export async function cargarCuenta(): Promise<Cuenta> {
   const paso = Number.isInteger(guardada.paso) ? Math.max(0, guardada.paso as number) : 0;
   // Si el formulario ganó campos nuevos desde que se guardó, quedan con su valor inicial.
   const form = { ...FORM_INICIAL, ...guardada.form };
+  const suscripcion = desdeGuardada(guardada.suscripcion);
 
   return {
     // Lo guardado antes de que existiera la bienvenida no trae este dato: si ya hay avance,
@@ -72,6 +76,8 @@ export async function cargarCuenta(): Promise<Cuenta> {
     form,
     fechaEnvio: guardada.fechaEnvio,
     motivoRechazo: typeof guardada.motivoRechazo === 'string' ? guardada.motivoRechazo : undefined,
+    // Se valida pasándola a fechas: si está dañada, queda sin plan (y se le pide elegir uno).
+    suscripcion: suscripcion ? aGuardada(suscripcion) : undefined,
   };
 }
 

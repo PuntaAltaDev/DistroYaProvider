@@ -1,6 +1,6 @@
 /**
  * Suscripción del proveedor. Los nombres siguen los del backend de Seba (PlanName, StartDate, EndDate).
- * Por ahora son datos simulados; después vienen de la API.
+ * Por ahora se guarda en el teléfono (ver `features/cuenta`); después viene de la API.
  */
 export type Suscripcion = {
   planName: string;
@@ -8,22 +8,36 @@ export type Suscripcion = {
   endDate: Date;
 };
 
+/** Cómo se guarda: las fechas como texto ISO, que es lo que también va a mandar la API. */
+export type SuscripcionGuardada = {
+  planName: string;
+  startDate: string;
+  endDate: string;
+};
+
+export const aGuardada = (s: Suscripcion): SuscripcionGuardada => ({
+  planName: s.planName,
+  startDate: s.startDate.toISOString(),
+  endDate: s.endDate.toISOString(),
+});
+
+/** Lo guardado, o nada si falta o está dañado. */
+export function desdeGuardada(
+  g: Partial<SuscripcionGuardada> | undefined,
+): Suscripcion | undefined {
+  if (!g || typeof g.planName !== 'string') return undefined;
+  const startDate = new Date(g.startDate ?? '');
+  const endDate = new Date(g.endDate ?? '');
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return undefined;
+  return { planName: g.planName, startDate, endDate };
+}
+
 export type EstadoSuscripcion = 'activa' | 'por-vencer' | 'vencida';
 
-const DIA = 24 * 60 * 60 * 1000;
+export const DIA = 24 * 60 * 60 * 1000;
 
 /** A partir de cuántos días antes del vencimiento se avisa. */
 export const DIAS_AVISO = 7;
-
-/** Datos de prueba: plan mensual que arrancó hoy. */
-export function suscripcionDePrueba(): Suscripcion {
-  const hoy = new Date();
-  return {
-    planName: 'Mensual',
-    startDate: hoy,
-    endDate: new Date(hoy.getTime() + 30 * DIA),
-  };
-}
 
 /** Días que faltan para el vencimiento (0 si ya venció). */
 export function diasRestantes(s: Suscripcion, ahora = new Date()) {

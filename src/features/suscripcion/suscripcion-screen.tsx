@@ -32,11 +32,13 @@ const TITULO: Record<EstadoSuscripcion, string> = {
 
 type SuscripcionScreenProps = {
   suscripcion: Suscripcion;
+  /** Abre los planes para renovar, extender o cambiar. */
+  alRenovar: () => void;
   alVolver: () => void;
 };
 
-/** Estado de la suscripción del proveedor: qué plan tiene y cuándo vence (EndDate). */
-export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenProps) {
+/** Estado de la suscripción del proveedor: qué plan tiene, cuándo vence (EndDate) y renovarlo. */
+export function SuscripcionScreen({ suscripcion, alRenovar, alVolver }: SuscripcionScreenProps) {
   const { colors, spacing, motion } = useAppTheme();
 
   const estado = estadoDe(suscripcion);
@@ -53,7 +55,13 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
   const avanceStyle = useAnimatedStyle(() => ({ width: `${avance.get() * 100}%` }));
 
   return (
-    <Marco derecha="MI PLAN" alVolver={alVolver} accion={{ label: 'Volver', onPress: alVolver }}>
+    <Marco
+      derecha="MI PLAN"
+      alVolver={alVolver}
+      accion={{
+        label: estado === 'activa' ? 'Extender o cambiar plan' : 'Renovar plan',
+        onPress: alRenovar,
+      }}>
       <View style={{ gap: spacing.md }}>
         <Titular lineas={['Tu plan']} acento={TITULO[estado]} clave="plan" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>
@@ -85,11 +93,11 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
         </View>
         <AppText variant="footnote" color={colorAviso}>
           {estado === 'vencida'
-            ? 'Tu perfil no aparece en el buscador. Escribinos para renovarlo.'
+            ? 'Tu perfil no aparece en el buscador. Renová tu plan para volver.'
             : dias === 1
               ? 'Falta 1 día.'
               : `Faltan ${dias} días.`}
-          {estado === 'por-vencer' ? ' Escribinos para renovarlo a tiempo.' : ''}
+          {estado === 'por-vencer' ? ' Renovalo a tiempo para seguir apareciendo.' : ''}
         </AppText>
       </Animated.View>
     </Marco>

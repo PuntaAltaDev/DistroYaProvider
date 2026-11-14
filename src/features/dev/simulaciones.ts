@@ -1,4 +1,5 @@
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
+import { aGuardada, DIA } from '@/features/suscripcion/datos';
 
 /** Lo que se puede simular: cada cosa reemplaza una respuesta del servidor o del administrador. */
 export type Simulacion = { etiqueta: string; hacer: () => void | Promise<void> };
@@ -20,6 +21,25 @@ export function useSimulaciones(): Simulacion[] {
         etiqueta: 'Rechazar el perfil',
         hacer: () => actualizar({ estado: 'rechazado', motivoRechazo: MOTIVO_DE_PRUEBA }),
       },
+    );
+  }
+
+  if (cuenta.estado === 'aprobado') {
+    /** Deja un plan mensual que vence dentro de `dias` días (negativo: ya venció). */
+    const planQueVence = (dias: number) => {
+      const fin = new Date(Date.now() + dias * DIA);
+      actualizar({
+        suscripcion: aGuardada({
+          planName: 'Mensual',
+          startDate: new Date(fin.getTime() - 30 * DIA),
+          endDate: fin,
+        }),
+      });
+    };
+    lista.push(
+      { etiqueta: 'Plan: vence en 3 días', hacer: () => planQueVence(3) },
+      { etiqueta: 'Plan: vencido', hacer: () => planQueVence(-2) },
+      { etiqueta: 'Plan: sin plan', hacer: () => actualizar({ suscripcion: undefined }) },
     );
   }
 
