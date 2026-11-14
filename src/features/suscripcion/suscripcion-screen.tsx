@@ -93,7 +93,7 @@ export function SuscripcionScreen({ suscripcion, alVolver }: SuscripcionScreenPr
 }
 
 const styles = StyleSheet.create({
-  fecha: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 34, letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
+  fecha: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 35, letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
   pista: { height: 1, justifyContent: 'center' },
   relleno: { height: 2.5 },
 });

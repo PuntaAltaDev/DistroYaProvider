@@ -99,5 +99,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   numero: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 22, width: 26, fontVariant: ['tabular-nums'] },
-  titulo: { fontFamily: fonts.semibold, fontSize: 24, lineHeight: 28, letterSpacing: -0.7 },
+  /** El alto de línea no baja de 1,25 del tamaño: si no, se corta la "p" de "precios". */
+  titulo: { fontFamily: fonts.semibold, fontSize: 24, lineHeight: 30, letterSpacing: -0.7 },
 });

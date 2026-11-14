@@ -82,7 +82,7 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
         <Titular lineas={['Tu']} acento="perfil." clave="perfil" />
         <Animated.View entering={FadeIn.delay(220).duration(400)}>
           <AppText variant="subhead" color="textSecondary">
-            Así te ven los bares y restaurantes. Cambiá lo que necesites.
+            Así te ven tus clientes. Cambiá lo que necesites.
           </AppText>
         </Animated.View>
       </View>

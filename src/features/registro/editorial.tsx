@@ -115,6 +115,11 @@ type TitularProps = {
   clave: string | number;
 };
 
+/** Alto de línea seguro para Inter (ascendente + descendente). */
+const ALTO_LINEA = 1.25;
+/** Separación que se ve entre renglones del titular. */
+const SEPARACION = 1.06;
+
 /** Titular grande: Inter 600 y la última frase en Inter 200. Cada línea entra desde abajo. */
 export function Titular({ lineas, acento, clave }: TitularProps) {
   const { colors } = useAppTheme();
@@ -124,9 +129,12 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
   const base = {
     fontFamily: fonts.semibold,
     fontSize: size,
-    lineHeight: size * 1.06,
+    // Inter necesita 1,21 de alto: con menos, Android corta la cola de la "g" y la "p".
+    lineHeight: size * ALTO_LINEA,
     letterSpacing: -size * 0.035,
   };
+  // Las líneas se juntan con margen negativo, así quedan cerca sin achicar la caja del texto.
+  const juntar = { marginTop: -size * (ALTO_LINEA - SEPARACION) };
 
   return (
     <View accessibilityRole="header">
@@ -134,7 +142,7 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
         <Animated.Text
           key={`${clave}-${i}`}
           entering={FadeInDown.delay(i * 70).duration(420)}
-          style={[base, { color: colors.text }]}
+          style={[base, i > 0 && juntar, { color: colors.text }]}
         >
           {linea}
         </Animated.Text>
@@ -144,6 +152,7 @@ export function Titular({ lineas, acento, clave }: TitularProps) {
         entering={FadeInDown.delay(lineas.length * 70).duration(420)}
         style={[
           base,
+          lineas.length > 0 && juntar,
           { fontFamily: fonts.light, color: colors.accent },
         ]}
       >
