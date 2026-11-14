@@ -85,10 +85,16 @@ export const IDS_RECORDATORIOS = ['plan-por-vencer', 'plan-vencido'] as const;
 /** Hora del día a la que llegan los recordatorios. */
 const HORA_RECORDATORIO = 10;
 
-/** Recordatorios del teléfono para un vencimiento: 7 días antes (a las 10) y el día que vence. Solo los que faltan. */
+/**
+ * Recordatorios del teléfono para un vencimiento: 7 días antes a las 10, y el día que vence
+ * (a las 10, o cuando vence si es más tarde: nunca de madrugada). Solo los que todavía no pasaron.
+ */
 export function recordatoriosDelPlan(fin: Date, ahora = new Date()): AvisoProgramado[] {
   const antes = new Date(fin.getTime() - DIAS_AVISO * DIA);
   antes.setHours(HORA_RECORDATORIO, 0, 0, 0);
+  const ese = new Date(fin);
+  ese.setHours(HORA_RECORDATORIO, 0, 0, 0);
+  const vencido = new Date(Math.max(fin.getTime(), ese.getTime()));
   const recordatorios: AvisoProgramado[] = [
     {
       id: 'plan-por-vencer',
@@ -100,7 +106,7 @@ export function recordatoriosDelPlan(fin: Date, ahora = new Date()): AvisoProgra
       id: 'plan-vencido',
       titulo: 'Tu plan venció',
       texto: 'Tu perfil dejó de aparecer en el buscador. Renovalo desde la app.',
-      fecha: fin,
+      fecha: vencido,
     },
   ];
   return recordatorios.filter((r) => r.fecha.getTime() > ahora.getTime());
