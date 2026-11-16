@@ -23,6 +23,13 @@ describe('cargarCuenta', () => {
     expect(cuenta.form).toEqual({ ...CUENTA_INICIAL.form, razonSocial: 'Distri Sur' });
   });
 
+  it('lo guardado antes de piso y depto los trae vacíos', async () => {
+    guardado({ estado: 'borrador', iniciada: true, form: { direccion: 'Sarmiento 123' } });
+    const { form } = await cargarCuenta();
+    expect(form.piso).toBe('');
+    expect(form.depto).toBe('');
+  });
+
   it('lo guardado antes de la bienvenida, con avance, se da por iniciado', async () => {
     guardado({ estado: 'borrador', paso: 2 });
     expect((await cargarCuenta()).iniciada).toBe(true);

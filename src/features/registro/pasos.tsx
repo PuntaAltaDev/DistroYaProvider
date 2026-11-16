@@ -21,6 +21,7 @@ import { haptics } from '@/lib/haptics';
 import { palette, useAppTheme } from '@/theme';
 
 import { CampoDireccion } from './campo-direccion';
+import { CampoPisoDepto } from './campo-piso-depto';
 import {
   AJUSTE_INICIAL,
   necesitaAjuste,
@@ -257,16 +258,20 @@ export function PasoContacto({ form, errores, cambiar, alTerminar }: PasoProps) 
 /* ───────────── ¿Dónde te encuentran? ───────────── */
 
 export function PasoDireccion({ form, errores, cambiar, alTerminar }: PasoProps) {
+  const { spacing } = useAppTheme();
   return (
-    <CampoDireccion
-      autoFocus
-      valor={form.direccion}
-      lugar={form.lugar}
-      error={errores.direccion}
-      alCambiar={cambiar}
-      returnKeyType="next"
-      onSubmitEditing={alTerminar}
-    />
+    <View style={{ gap: spacing.md }}>
+      <CampoDireccion
+        autoFocus
+        valor={form.direccion}
+        lugar={form.lugar}
+        error={errores.direccion}
+        alCambiar={cambiar}
+        returnKeyType="next"
+        onSubmitEditing={alTerminar}
+      />
+      <CampoPisoDepto piso={form.piso} depto={form.depto} alCambiar={cambiar} />
+    </View>
   );
 }
 

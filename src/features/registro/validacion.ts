@@ -13,6 +13,9 @@ export type RegistroForm = {
   whatsapp: string;
   telefono: string;
   direccion: string;
+  /** Piso y depto: solo si los tiene. Vacío si no. */
+  piso: string;
+  depto: string;
   /** La dirección elegida de la lista de Google, con localidad, provincia y coordenadas. */
   lugar?: Lugar;
   rubros: string[];
@@ -29,6 +32,8 @@ export const FORM_INICIAL: RegistroForm = {
   whatsapp: '',
   telefono: '',
   direccion: '',
+  piso: '',
+  depto: '',
   rubros: [],
 };
 

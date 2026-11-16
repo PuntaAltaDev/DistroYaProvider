@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { LineField } from '@/components/ui/line-field';
 import { CampoDireccion } from '@/features/registro/campo-direccion';
+import { CampoPisoDepto } from '@/features/registro/campo-piso-depto';
 import { Titular } from '@/components/ui/editorial';
 import { PasoLogo, PasoRubros } from '@/features/registro/pasos';
 import {
@@ -65,6 +66,8 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
       ...borrador,
       razonSocial: borrador.razonSocial.trim(),
       direccion: borrador.direccion.trim(),
+      piso: borrador.piso.trim(),
+      depto: borrador.depto.trim(),
     };
     setBorrador(limpio);
     alGuardar(limpio);
@@ -131,6 +134,7 @@ export function PerfilScreen({ form, alVolver, alGuardar }: PerfilScreenProps) {
           error={errores.direccion}
           alCambiar={cambiar}
         />
+        <CampoPisoDepto piso={borrador.piso} depto={borrador.depto} alCambiar={cambiar} />
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(400).duration(400)} style={{ gap: spacing.md }}>
