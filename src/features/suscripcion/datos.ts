@@ -32,9 +32,22 @@ export function desdeGuardada(
   return { planName: g.planName, startDate, endDate };
 }
 
-export type EstadoSuscripcion = 'activa' | 'por-vencer' | 'vencida';
-
 export const DIA = 24 * 60 * 60 * 1000;
+
+/** Licencia de prueba que se da al aprobar el perfil. Con la API, la crea el servidor. */
+export const PLAN_FREE = 'Free';
+export const DIAS_FREE = 15;
+
+export const esFree = (s: Suscripcion) => s.planName === PLAN_FREE;
+
+/** La licencia Free de 15 días, desde `desde` (el momento en que se aprueba el perfil). */
+export const licenciaFree = (desde = new Date()): Suscripcion => ({
+  planName: PLAN_FREE,
+  startDate: desde,
+  endDate: new Date(desde.getTime() + DIAS_FREE * DIA),
+});
+
+export type EstadoSuscripcion = 'activa' | 'por-vencer' | 'vencida';
 
 /** A partir de cuántos días antes del vencimiento se avisa. */
 export const DIAS_AVISO = 7;
@@ -80,9 +93,9 @@ export function historialDePrueba(): ArchivoLista[] {
   ];
 }
 
-/** "13 de diciembre" */
+/** "13 de diciembre de 2026" */
 export const fechaLarga = (d: Date) =>
-  d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
+  d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
 
 /** "13/11/2026" */
 export const fechaCorta = (d: Date) =>

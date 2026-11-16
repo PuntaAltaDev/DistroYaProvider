@@ -1,13 +1,13 @@
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
 import { Titular } from '@/components/ui/editorial';
 import { Icon } from '@/components/ui/icon';
 import { Marco } from '@/components/ui/marco';
-import { haptics } from '@/lib/haptics';
 import { useAppTheme } from '@/theme';
 
+import { abrirUrl } from './contacto';
 import { CONTACTO, MENSAJE_INICIAL, PREGUNTAS } from './contenido';
 
 const texto = encodeURIComponent(MENSAJE_INICIAL);
@@ -24,15 +24,6 @@ const CANALES = [
     url: `mailto:${CONTACTO.email}?subject=${encodeURIComponent('Consulta')}&body=${texto}`,
   },
 ];
-
-const abrir = async (url: string) => {
-  haptics.tap();
-  try {
-    await Linking.openURL(url);
-  } catch (error) {
-    console.warn(`No se pudo abrir ${url}`, error);
-  }
-};
 
 /** Ayuda y contacto: escribir por WhatsApp o email, y las preguntas más comunes. */
 export function AyudaScreen({ alVolver }: { alVolver: () => void }) {
@@ -57,7 +48,7 @@ export function AyudaScreen({ alVolver }: { alVolver: () => void }) {
           {CANALES.map((canal) => (
             <Pressable
               key={canal.nombre}
-              onPress={() => abrir(canal.url)}
+              onPress={() => abrirUrl(canal.url)}
               accessibilityRole="link"
               accessibilityLabel={`Escribir por ${canal.nombre}`}
               style={({ pressed }) => [

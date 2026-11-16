@@ -21,7 +21,7 @@ Cómo está organizado el código de DistroYa Proveedores y las reglas que se si
 src/
   app/            Rutas. Cada archivo es una pantalla: arma la de features/ y le dice adónde ir
                   (router). _layout.tsx decide qué rutas existen según la etapa de la cuenta.
-    panel/        "/panel/…": inicio, perfil, plan, planes, permiso de avisos, lista, avisos y ajustes.
+    panel/        "/panel/…": inicio, perfil, plan, lista, avisos y ajustes.
     legal/        "/legal/terminos" y "/legal/privacidad".
   components/ui/  Piezas reutilizables sin lógica de negocio: texto, campo, chip, ícono, barra de acción,
                   barra superior y titular (editorial), marco de pantalla (marco) y el lugar de las
@@ -32,8 +32,8 @@ src/
     legal/        Términos y condiciones, política de privacidad y su versión vigente.
     registro/     Alta del proveedor: pasos, validación, logo y dirección; en revisión y rechazado.
     panel/        Lo que ve el proveedor ya aprobado: inicio, perfil y lista de precios.
-    suscripcion/  Plan del proveedor (ver, elegir, renovar) y lista de precios con historial.
-    avisos/       Bandeja de avisos, permiso, y recordatorios del vencimiento en el teléfono.
+    suscripcion/  Licencia del proveedor (Free de 15 días, cuánto queda, cuándo renovar) y lista de precios con historial.
+    avisos/       Bandeja de avisos, interruptor de avisos y recordatorios del vencimiento en el teléfono.
     ayuda/        Contacto (WhatsApp y email) y preguntas frecuentes.
     cuenta/       Estado del proveedor guardado en el teléfono.
     ajustes/      Apariencia, avisos, cerrar sesión, eliminar cuenta, ayuda y legal.
@@ -56,7 +56,7 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 6. **Las librerías de Expo se instalan con `npx expo install`** y antes de usar una API se mira la documentación de la versión instalada (ver `AGENTS.md`).
 7. **Los secretos no se suben.** Van en `.env.local`.
 8. **Alto de línea de Inter: nunca menos de 1,25 veces el tamaño.** Con menos, Android corta las colas de la "g" y la "p".
-9. **Las reglas del negocio tienen pruebas automáticas** (planes, vencimientos, avisos, validaciones, lectura de lo guardado). Van en una carpeta `__tests__` al lado del código, en archivos `*-test.ts`, y corren con `npm test` (también dentro de `npm run check`). Si se cambia una regla, se cambia su prueba en el mismo commit.
+9. **Las reglas del negocio tienen pruebas automáticas** (licencia Free, vencimientos, avisos, validaciones, lectura de lo guardado). Van en una carpeta `__tests__` al lado del código, en archivos `*-test.ts`, y corren con `npm test` (también dentro de `npm run check`). Si se cambia una regla, se cambia su prueba en el mismo commit.
 
 ## Diseño
 
@@ -67,24 +67,23 @@ Regla de dependencias: `app` usa `features`; `features` usa `components`, `lib`,
 
 ## Datos de prueba que se reemplazan con la API
 
-| Qué                            | Dónde                                                     | Se reemplaza por                                       |
-| ------------------------------ | --------------------------------------------------------- | ------------------------------------------------------ |
-| Rubros                         | `src/data/rubros.ts`                                      | Tags de la API                                         |
-| Rubros nuevos                  | `rubrosNuevos` en el formulario (`features/registro`)     | Alta del tag en la API, pendiente de aprobación        |
-| Plan del proveedor             | `suscripcion` en la cuenta (`features/cuenta/cuenta.ts`)  | Suscripción del proveedor                              |
-| Planes y precios               | `PLANES` en `features/suscripcion/planes.ts`              | Planes de la API                                       |
-| Pago del plan                  | `pagar` en `features/suscripcion/planes-screen.tsx`       | Mercado Pago a través del backend                      |
-| Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`    | Historial de listas de la API                          |
-| Envío del registro             | `alEnviar` en `app/registro.tsx`                          | Alta del proveedor en la API                           |
-| Aprobación o rechazo           | Simulador en `features/dev/simulaciones.ts`               | Estado y motivo que devuelve la API                    |
-| Avisos de la bandeja           | `avisosDe` en `features/avisos/avisos.ts`                 | Avisos de la API (y push)                              |
-| Textos legales                 | `features/legal/textos.ts` (borrador)                     | Textos revisados por un abogado                        |
-| Contacto de soporte            | `CONTACTO` en `features/ayuda/contenido.ts`               | Número y email reales                                  |
-| Estado y borrador de la cuenta | `features/cuenta/` (se guarda en el teléfono)             | Borrador local y estado desde la API                   |
-| Guardado del perfil            | `actualizar({ form })` en `app/panel/perfil.tsx`          | Actualización del perfil en la API                     |
-| Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx` | Baja de la cuenta en la API, y después borrar lo local |
-| Búsqueda de direcciones        | `src/lib/places.ts` (la app habla directo con Google)     | Llamadas al backend, sin clave en la app               |
-| Logo y lista en el teléfono    | `features/registro/logo.ts`                               | Subida a Blob Storage                                  |
+| Qué                            | Dónde                                                     | Se reemplaza por                                                      |
+| ------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Rubros                         | `src/data/rubros.ts`                                      | Tags de la API                                                        |
+| Rubros nuevos                  | `rubrosNuevos` en el formulario (`features/registro`)     | Alta del tag en la API, pendiente de aprobación                       |
+| Licencia del proveedor         | `suscripcion` en la cuenta (`features/cuenta/cuenta.ts`)  | Licencia que crea el servidor (Free al aprobar) y que asigna el Admin |
+| Licencia Free al aprobar       | `licenciaFree` en `features/suscripcion/datos.ts`         | El servidor la crea al aprobar el perfil                              |
+| Historial de listas            | `historialDePrueba` en `features/suscripcion/datos.ts`    | Historial de listas de la API                                         |
+| Envío del registro             | `alEnviar` en `app/registro.tsx`                          | Alta del proveedor en la API                                          |
+| Aprobación o rechazo           | Simulador en `features/dev/simulaciones.ts`               | Estado y motivo que devuelve la API                                   |
+| Avisos de la bandeja           | `avisosDe` en `features/avisos/avisos.ts`                 | Avisos de la API (y push)                                             |
+| Textos legales                 | `features/legal/textos.ts` (borrador)                     | Textos revisados por un abogado                                       |
+| Contacto de soporte            | `CONTACTO` en `features/ayuda/contenido.ts`               | Número y email reales                                                 |
+| Estado y borrador de la cuenta | `features/cuenta/` (se guarda en el teléfono)             | Borrador local y estado desde la API                                  |
+| Guardado del perfil            | `actualizar({ form })` en `app/panel/perfil.tsx`          | Actualización del perfil en la API                                    |
+| Eliminar cuenta                | `eliminarCuenta` en `features/ajustes/ajustes-screen.tsx` | Baja de la cuenta en la API, y después borrar lo local                |
+| Búsqueda de direcciones        | `src/lib/places.ts` (la app habla directo con Google)     | Llamadas al backend, sin clave en la app                              |
+| Logo y lista en el teléfono    | `features/registro/logo.ts`                               | Subida a Blob Storage                                                 |
 
 ## Deudas conocidas
 
@@ -107,8 +106,8 @@ Cosas que hoy no cumplen del todo las reglas de arriba:
 - **"Cerrar sesión" (Ajustes) pone `iniciada` en falso** y conserva el perfil y el avance: al volver a entrar, sigue donde estaba. Sin sesión, las rutas protegidas solo dejan ver la bienvenida y el acceso. Con la API, además se cierra la sesión en el servidor.
 - **Términos y privacidad se aceptan al entrar** ("Al continuar aceptás…"). La cuenta guarda la versión aceptada (`VERSION_LEGAL`) y la fecha; si cambian los textos, se sube la versión. Los textos son un borrador hasta que los revise un abogado.
 - **Perfil rechazado:** el administrador manda un motivo; "Corregir y reenviar" vuelve al registro con los datos cargados y el motivo a la vista en cada paso. Al reenviar, el motivo se borra.
-- **Planes:** si el plan sigue vigente, lo que se paga se suma al tiempo que queda (no se pierde nada al renovar antes). Sin plan, el perfil no aparece en el buscador y el inicio pide elegir uno.
-- **Avisos:** el permiso del sistema se pide una sola vez y en contexto (después de contratar el primer plan), con una pantalla propia antes, porque el sistema no vuelve a preguntar si se niega. Los recordatorios son locales (llegan sin servidor): 7 días antes a las 10 y el día que vence. Los push del servidor necesitan una development build y el backend; cuando lleguen, se suma el plugin `expo-notifications` en `app.json`. Tocar un aviso del teléfono abre la bandeja (`/panel/avisos`), también con la app cerrada.
+- **Licencia Free y sin pagos en la app.** Al aprobar el perfil arranca la licencia **Free de 15 días** (`PLAN_FREE`, `DIAS_FREE`); con la API la crea el servidor. "Mi plan" muestra qué licencia tiene, un contador de días que se acorta con la barra, cuándo debe renovar y, al pie, el interruptor de avisos. No se cobra acá: los planes pagos los asigna el Admin y, para activar o renovar, el botón abre el WhatsApp de soporte (`abrirWhatsApp`). Sin licencia vigente, el perfil no aparece en el buscador. Cuentas viejas sin licencia ven cómo activarla. Pendiente de Seba: crear la Free al aprobar; del Admin: asignar o extender un plan.
+- **Avisos:** el permiso del sistema se pide al activar el interruptor de "Mi plan" (o el de Ajustes: es el mismo dato), sin pantalla aparte; si el teléfono los tiene bloqueados, se ofrece ir a sus ajustes. Los recordatorios son locales (llegan sin servidor): 7 días antes a las 10 y el día que vence; con la Free hablan de la prueba gratis. Los push del servidor necesitan una development build y el backend; cuando lleguen, se suma el plugin `expo-notifications` en `app.json`. Tocar un aviso del teléfono abre la bandeja (`/panel/avisos`), también con la app cerrada.
 - **Navegación con rutas protegidas** (`Stack.Protected` en `app/_layout.tsx`). Cada etapa de la cuenta tiene sus rutas: sin sesión, `/` y `/entrada`; después `/registro`, `/en-revision`, `/rechazado` o `/panel/…`. Ayuda y legales están siempre. Cuando cambia la etapa (entrar, enviar, aprobar, cerrar sesión, eliminar), el router saca las pantallas viejas y lleva a la de la etapa nueva (`redirectTo`): ninguna pantalla navega a mano entre etapas. Una ruta que no corresponde (ej.: un link a `/panel` sin sesión) lleva a la etapa actual. Dentro de una pantalla con pasos (registro, código del acceso), el "atrás" de Android vuelve al paso anterior (`lib/atras.ts`).
 - **Piso y depto son opcionales y no ocupan lugar:** la dirección muestra solo el link "+ Agregar piso o depto"; los campos aparecen al tocarlo (o ya abiertos si hay algo cargado). Se guardan como `piso` y `depto` en el formulario (`features/registro/campo-piso-depto.tsx`, usado en el registro y en Mi perfil). Los nombres definitivos los confirma Seba con la API.
 - **Rubros nuevos con aprobación del Admin.** En "¿Qué vendés?" el link "+ Otro rubro" abre un campo con sugerencias de los rubros que ya existen (`features/registro/campo-rubro-nuevo.tsx`). Si no hay uno igual, se ofrece agregarlo: el proveedor lo usa enseguida (queda en `rubros` y en `rubrosNuevos`) y los demás lo ven cuando el Admin lo aprueba. Para no repetir, se compara sin tildes, mayúsculas, espacios de más ni plural (`features/registro/rubros.ts`, con pruebas). Entre 2 y 30 caracteres, solo letras y números, hasta 3 nuevos por proveedor. Un rubro propuesto que se desmarca se descarta. **Falta de Seba y del Admin:** endpoint para crear un tag en estado pendiente (único sin importar tildes, mayúsculas ni plural) y para aprobarlo, rechazarlo o unirlo a uno existente; y una pantalla "Rubros nuevos" en el Admin.

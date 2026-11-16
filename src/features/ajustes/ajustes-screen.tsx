@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
-import { permitirAvisos } from '@/features/avisos/avisos';
+import { InterruptorAvisos } from '@/features/avisos/interruptor-avisos';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
 import { Titular } from '@/components/ui/editorial';
@@ -22,26 +22,16 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
 
 /** Ajustes del proveedor: cómo se ve la app, los avisos, su cuenta y lo legal. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
-  const { colors, spacing, mode, setMode } = useAppTheme();
-  const { cuenta, actualizar, reiniciar } = useCuenta();
+  const { spacing, mode, setMode } = useAppTheme();
+  const { actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
-  /** El teléfono tiene los avisos bloqueados: se ofrece ir a sus ajustes. */
-  const [bloqueados, setBloqueados] = useState(false);
-  const avisosActivos = !!cuenta.avisos?.activos;
 
   const cerrarSesion = () => {
     haptics.tap();
     // Se cierra el acceso pero se conservan el perfil y el avance del registro: al volver a
     // entrar, sigue donde estaba. Con la API, acá también se cierra la sesión en el servidor.
     actualizar({ iniciada: false, metodo: undefined, email: undefined });
-  };
-
-  const cambiarAvisos = async (quiere: boolean) => {
-    haptics.select();
-    const activos = quiere && (await permitirAvisos());
-    setBloqueados(quiere && !activos);
-    actualizar((actual) => ({ avisos: { activos, leidos: actual.avisos?.leidos ?? [] } }));
   };
 
   const eliminarCuenta = async () => {
@@ -75,31 +65,8 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
       </Grupo>
 
       <Grupo titulo="AVISOS" orden={1}>
-        <Fila
-          etiqueta="Avisos de vencimiento"
-          rol="switch"
-          seleccionada={avisosActivos}
-          onPress={() => cambiarAvisos(!avisosActivos)}
-          derecha={
-            <Switch
-              value={avisosActivos}
-              onValueChange={cambiarAvisos}
-              trackColor={{ true: colors.primary, false: colors.borderStrong }}
-              accessibilityLabel="Avisos de vencimiento"
-            />
-          }
-        />
+        <InterruptorAvisos />
       </Grupo>
-      {bloqueados && Platform.OS !== 'web' ? (
-        <Pressable onPress={() => Linking.openSettings()} accessibilityRole="link">
-          <AppText variant="footnote" color="textSecondary">
-            Los avisos están bloqueados en tu teléfono.{' '}
-            <AppText variant="footnote" color="primaryText">
-              Abrir ajustes del teléfono
-            </AppText>
-          </AppText>
-        </Pressable>
-      ) : null}
 
       <Grupo titulo="CUENTA" orden={2}>
         <Fila etiqueta="Cerrar sesión" onPress={cerrarSesion} />

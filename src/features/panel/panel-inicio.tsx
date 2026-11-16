@@ -1,4 +1,4 @@
-import { Redirect, router } from 'expo-router';
+import { router } from 'expo-router';
 
 import { useAbrirAvisoTocado } from '@/features/avisos/abrir-aviso-tocado';
 import { avisosDe, sinLeer } from '@/features/avisos/avisos';
@@ -8,6 +8,7 @@ import {
   diasRestantes,
   estadoDe,
   fechaCorta,
+  esFree,
   type Suscripcion,
 } from '@/features/suscripcion/datos';
 
@@ -16,10 +17,12 @@ import { useListas } from './listas';
 
 /** Lo que dice "Mi plan" en el inicio. */
 function detallePlan(suscripcion: Suscripcion | undefined) {
-  if (!suscripcion) return 'Elegí tu plan para aparecer en el buscador';
-  if (estadoDe(suscripcion) === 'vencida') return 'Venció. Renovalo para volver al buscador.';
+  if (!suscripcion) return 'Activá tu plan para aparecer en el buscador';
+  const nombre = esFree(suscripcion) ? 'Free' : suscripcion.planName;
+  if (estadoDe(suscripcion) === 'vencida')
+    return `${nombre} · Venció. Activá un plan para volver al buscador.`;
   const dias = diasRestantes(suscripcion);
-  return `Vence el ${fechaCorta(suscripcion.endDate)} · ${dias === 1 ? 'falta 1 día' : `faltan ${dias} días`}`;
+  return `${nombre} · ${dias === 1 ? 'queda 1 día' : `quedan ${dias} días`} · hasta el ${fechaCorta(suscripcion.endDate)}`;
 }
 
 /** Inicio del panel: un acceso por sección, cada uno con su dato más útil. */
@@ -29,9 +32,6 @@ export function PanelInicio() {
   const suscripcion = desdeGuardada(cuenta.suscripcion);
   const nuevos = sinLeer(avisosDe(cuenta), cuenta.avisos?.leidos);
   useAbrirAvisoTocado();
-
-  // Tiene plan pero nunca se le preguntó por los avisos (ej.: cerró la app en esa pantalla).
-  if (suscripcion && !cuenta.avisos) return <Redirect href="/panel/permiso-avisos" />;
 
   return (
     <InicioScreen
@@ -46,8 +46,7 @@ export function PanelInicio() {
           titulo: 'Mi plan',
           detalle: detallePlan(suscripcion),
           aviso: !suscripcion || estadoDe(suscripcion) !== 'activa',
-          // Sin plan, lleva directo a elegir uno.
-          onPress: () => router.push(suscripcion ? '/panel/plan' : '/panel/planes'),
+          onPress: () => router.push('/panel/plan'),
         },
         {
           titulo: 'Lista de precios',

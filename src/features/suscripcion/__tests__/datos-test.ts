@@ -5,7 +5,10 @@ import {
   diasRestantes,
   estadoDe,
   fraccionRestante,
+  DIAS_FREE,
+  esFree,
   HISTORIAL_MAX,
+  licenciaFree,
   sumarAlHistorial,
 } from '../datos';
 
@@ -79,5 +82,36 @@ describe('sumarAlHistorial', () => {
     expect(nuevo).toHaveLength(HISTORIAL_MAX);
     expect(nuevo[0]).toEqual(lista(9)); // sin el tamaño
     expect(nuevo.at(-1)).toEqual(lista(4));
+  });
+});
+
+describe('licencia Free', () => {
+  it('dura 15 días desde que se aprueba el perfil', () => {
+    const free = licenciaFree(ahora);
+    expect(DIAS_FREE).toBe(15);
+    expect(esFree(free)).toBe(true);
+    expect(free.startDate).toEqual(ahora);
+    expect(free.endDate.getTime() - ahora.getTime()).toBe(15 * DIA);
+    expect(diasRestantes(free, ahora)).toBe(15);
+    expect(estadoDe(free, ahora)).toBe('activa');
+  });
+
+  it('el contador baja con los días: por vencer a los 7 y vencida a los 15', () => {
+    const free = licenciaFree(ahora);
+    const pasan = (dias: number) => new Date(ahora.getTime() + dias * DIA);
+    expect(diasRestantes(free, pasan(10))).toBe(5);
+    expect(estadoDe(free, pasan(8))).toBe('por-vencer');
+    expect(estadoDe(free, pasan(15))).toBe('vencida');
+    expect(diasRestantes(free, pasan(20))).toBe(0);
+  });
+
+  it('la barra se va acortando', () => {
+    const free = licenciaFree(ahora);
+    expect(fraccionRestante(free, ahora)).toBe(1);
+    expect(fraccionRestante(free, new Date(ahora.getTime() + 7.5 * DIA))).toBeCloseTo(0.5);
+  });
+
+  it('un plan pago no es Free', () => {
+    expect(esFree({ ...licenciaFree(ahora), planName: 'Mensual' })).toBe(false);
   });
 });

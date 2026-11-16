@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import { RUTA_AVISOS } from '@/features/avisos/avisos';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
-import { aGuardada, DIA } from '@/features/suscripcion/datos';
+import { aGuardada, DIA, DIAS_FREE, licenciaFree, PLAN_FREE } from '@/features/suscripcion/datos';
 import { programarAviso } from '@/lib/notificaciones';
 
 /** Lo que se puede simular: cada cosa reemplaza una respuesta del servidor o del administrador. */
@@ -22,7 +22,13 @@ export function useSimulaciones(): Simulacion[] {
     lista.push(
       {
         etiqueta: 'Aprobar el perfil',
-        hacer: () => actualizar({ estado: 'aprobado', fechaAprobacion: new Date().toISOString() }),
+        hacer: () =>
+          // Con la API, el servidor crea la licencia Free al aprobar.
+          actualizar({
+            estado: 'aprobado',
+            fechaAprobacion: new Date().toISOString(),
+            suscripcion: aGuardada(licenciaFree()),
+          }),
       },
       {
         etiqueta: 'Rechazar el perfil',
@@ -32,21 +38,30 @@ export function useSimulaciones(): Simulacion[] {
   }
 
   if (cuenta.estado === 'aprobado') {
-    /** Deja un plan mensual que vence dentro de `dias` días (negativo: ya venció). */
-    const planQueVence = (dias: number) => {
+    /** Deja la licencia con ese nombre, que vence dentro de `dias` días (negativo: ya venció). */
+    const licencia = (planName: string, dias: number, duracion: number) => {
       const fin = new Date(Date.now() + dias * DIA);
       actualizar({
         suscripcion: aGuardada({
-          planName: 'Mensual',
-          startDate: new Date(fin.getTime() - 30 * DIA),
+          planName,
+          startDate: new Date(fin.getTime() - duracion * DIA),
           endDate: fin,
         }),
       });
     };
     lista.push(
-      { etiqueta: 'Plan: vence en 3 días', hacer: () => planQueVence(3) },
-      { etiqueta: 'Plan: vencido', hacer: () => planQueVence(-2) },
-      { etiqueta: 'Plan: sin plan', hacer: () => actualizar({ suscripcion: undefined }) },
+      {
+        etiqueta: 'Free: recién aprobado (15 días)',
+        hacer: () => actualizar({ suscripcion: aGuardada(licenciaFree()) }),
+      },
+      { etiqueta: 'Free: quedan 3 días', hacer: () => licencia(PLAN_FREE, 3, DIAS_FREE) },
+      { etiqueta: 'Free: terminó', hacer: () => licencia(PLAN_FREE, -2, DIAS_FREE) },
+      { etiqueta: 'Plan mensual: quedan 25 días', hacer: () => licencia('Mensual', 25, 30) },
+      { etiqueta: 'Plan mensual: vence en 3 días', hacer: () => licencia('Mensual', 3, 30) },
+      {
+        etiqueta: 'Sin licencia (cuenta vieja)',
+        hacer: () => actualizar({ suscripcion: undefined }),
+      },
     );
     // En web no hay avisos del teléfono.
     if (Platform.OS !== 'web') {
@@ -55,7 +70,7 @@ export function useSimulaciones(): Simulacion[] {
         hacer: () =>
           programarAviso({
             id: 'prueba',
-            titulo: 'Tu plan vence en 7 días',
+            titulo: 'Tu prueba gratis termina en 7 días',
             texto: 'Aviso de prueba.',
             fecha: new Date(Date.now() + 5000),
             url: RUTA_AVISOS,

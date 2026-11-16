@@ -5,7 +5,9 @@ import {
   desdeGuardada,
   diasRestantes,
   estadoDe,
+  esFree,
   fechaCorta,
+  type Suscripcion,
 } from '@/features/suscripcion/datos';
 import { estadoPermiso, pedirPermiso, type AvisoProgramado } from '@/lib/notificaciones';
 
@@ -36,28 +38,27 @@ export function avisosDe(cuenta: Cuenta, ahora = new Date()): Aviso[] {
     {
       id: 'aprobado',
       titulo: 'Tu perfil está activo',
-      texto: 'Ya te pueden encontrar los comercios.',
+      texto:
+        suscripcion && esFree(suscripcion)
+          ? `Ya te pueden encontrar los comercios. Tenés ${diasRestantes(suscripcion, ahora)} días de prueba gratis.`
+          : 'Ya te pueden encontrar los comercios.',
       fecha: aprobacion,
       destino: 'perfil',
     },
   ];
 
-  if (!suscripcion) {
-    avisos.push({
-      id: 'sin-plan',
-      titulo: 'Elegí tu plan',
-      texto: 'Tu perfil todavía no aparece en el buscador.',
-      fecha: aprobacion,
-      destino: 'plan',
-    });
-  } else {
+  // Sin licencia (cuentas viejas) no hay aviso: "Mi plan" explica cómo activarla.
+  if (suscripcion) {
     const estado = estadoDe(suscripcion, ahora);
     const fin = suscripcion.endDate.toISOString();
+    const free = esFree(suscripcion);
     if (estado === 'vencida') {
       avisos.push({
         id: `vencido-${fin}`,
-        titulo: 'Tu plan venció',
-        texto: 'Tu perfil no aparece en el buscador. Renovalo para volver.',
+        titulo: free ? 'Tu prueba gratis terminó' : 'Tu plan venció',
+        texto: free
+          ? 'Tu perfil no aparece en el buscador. Escribinos para activar tu plan.'
+          : 'Tu perfil no aparece en el buscador. Renovalo para volver.',
         fecha: suscripcion.endDate,
         destino: 'plan',
       });
@@ -65,8 +66,14 @@ export function avisosDe(cuenta: Cuenta, ahora = new Date()): Aviso[] {
       const dias = diasRestantes(suscripcion, ahora);
       avisos.push({
         id: `por-vencer-${fin}`,
-        titulo: dias === 1 ? 'Tu plan vence mañana' : `Tu plan vence en ${dias} días`,
-        texto: `Vence el ${fechaCorta(suscripcion.endDate)}. Renovalo para seguir apareciendo.`,
+        titulo: free
+          ? dias === 1
+            ? 'Tu prueba gratis termina mañana'
+            : `Tu prueba gratis termina en ${dias} días`
+          : dias === 1
+            ? 'Tu plan vence mañana'
+            : `Tu plan vence en ${dias} días`,
+        texto: `${free ? 'Termina' : 'Vence'} el ${fechaCorta(suscripcion.endDate)}. ${free ? 'Escribinos' : 'Renovalo'} para seguir apareciendo.`,
         fecha: new Date(suscripcion.endDate.getTime() - DIAS_AVISO * DIA),
         destino: 'plan',
       });
@@ -92,7 +99,12 @@ const HORA_RECORDATORIO = 10;
  * Recordatorios del teléfono para un vencimiento: 7 días antes a las 10, y el día que vence
  * (a las 10, o cuando vence si es más tarde: nunca de madrugada). Solo los que todavía no pasaron.
  */
-export function recordatoriosDelPlan(fin: Date, ahora = new Date()): AvisoProgramado[] {
+export function recordatoriosDelPlan(
+  suscripcion: Suscripcion,
+  ahora = new Date(),
+): AvisoProgramado[] {
+  const fin = suscripcion.endDate;
+  const free = esFree(suscripcion);
   const antes = new Date(fin.getTime() - DIAS_AVISO * DIA);
   antes.setHours(HORA_RECORDATORIO, 0, 0, 0);
   const ese = new Date(fin);
@@ -101,15 +113,21 @@ export function recordatoriosDelPlan(fin: Date, ahora = new Date()): AvisoProgra
   const recordatorios: AvisoProgramado[] = [
     {
       id: 'plan-por-vencer',
-      titulo: `Tu plan vence en ${DIAS_AVISO} días`,
-      texto: 'Renovalo para que tu perfil siga apareciendo en el buscador.',
+      titulo: free
+        ? `Tu prueba gratis termina en ${DIAS_AVISO} días`
+        : `Tu plan vence en ${DIAS_AVISO} días`,
+      texto: free
+        ? 'Escribinos para que tu perfil siga apareciendo en el buscador.'
+        : 'Renovalo para que tu perfil siga apareciendo en el buscador.',
       fecha: antes,
       url: RUTA_AVISOS,
     },
     {
       id: 'plan-vencido',
-      titulo: 'Tu plan venció',
-      texto: 'Tu perfil dejó de aparecer en el buscador. Renovalo desde la app.',
+      titulo: free ? 'Tu prueba gratis terminó' : 'Tu plan venció',
+      texto: free
+        ? 'Tu perfil dejó de aparecer en el buscador. Escribinos para activar tu plan.'
+        : 'Tu perfil dejó de aparecer en el buscador. Renovalo para volver.',
       fecha: vencido,
       url: RUTA_AVISOS,
     },
