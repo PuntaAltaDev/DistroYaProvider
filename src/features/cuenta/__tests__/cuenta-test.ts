@@ -30,6 +30,17 @@ describe('cargarCuenta', () => {
     expect(form.depto).toBe('');
   });
 
+  it('la descripción: se conserva prolija, y vacía o con otra forma queda sin descripción', async () => {
+    guardado({ estado: 'aprobado', iniciada: true, descripcion: '  Vendemos bebidas.  ' });
+    expect((await cargarCuenta()).descripcion).toBe('Vendemos bebidas.');
+    guardado({ estado: 'aprobado', iniciada: true, descripcion: '   ' });
+    expect((await cargarCuenta()).descripcion).toBeUndefined();
+    guardado({ estado: 'aprobado', iniciada: true, descripcion: 42 });
+    expect((await cargarCuenta()).descripcion).toBeUndefined();
+    guardado({ estado: 'aprobado', iniciada: true });
+    expect((await cargarCuenta()).descripcion).toBeUndefined();
+  });
+
   it('lo guardado antes de la bienvenida, con avance, se da por iniciado', async () => {
     guardado({ estado: 'borrador', paso: 2 });
     expect((await cargarCuenta()).iniciada).toBe(true);

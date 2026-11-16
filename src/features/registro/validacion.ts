@@ -40,6 +40,19 @@ export const FORM_INICIAL: RegistroForm = {
   rubrosNuevos: [],
 };
 
+/** Largo máximo de la descripción del negocio ("Contanos más"). */
+export const DESCRIPCION_MAX = 300;
+
+/** Deja la descripción prolija: sin espacios de más, con a lo sumo una línea en blanco seguida. */
+export function limpiarDescripcion(texto: string) {
+  return texto
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, DESCRIPCION_MAX);
+}
+
 /** Tamaño máximo del catálogo: 10 MB. */
 export const CATALOGO_MAX_BYTES = 10 * 1024 * 1024;
 

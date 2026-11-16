@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { AppText } from '@/components/ui/app-text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
+import { DescripcionNegocio } from './descripcion-negocio';
 import { InterruptorAvisos } from '@/features/avisos/interruptor-avisos';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { Marco } from '@/components/ui/marco';
@@ -23,7 +24,7 @@ const MODOS: { valor: ThemeMode; etiqueta: string }[] = [
 /** Ajustes del proveedor: cómo se ve la app, los avisos, su cuenta y lo legal. */
 export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
   const { spacing, mode, setMode } = useAppTheme();
-  const { actualizar, reiniciar } = useCuenta();
+  const { cuenta, actualizar, reiniciar } = useCuenta();
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
 
@@ -68,12 +69,19 @@ export function AjustesScreen({ alVolver }: { alVolver: () => void }) {
         <InterruptorAvisos />
       </Grupo>
 
-      <Grupo titulo="CUENTA" orden={2}>
+      <Grupo titulo="TU NEGOCIO" orden={2}>
+        <DescripcionNegocio
+          descripcion={cuenta.descripcion}
+          alGuardar={(descripcion) => actualizar({ descripcion })}
+        />
+      </Grupo>
+
+      <Grupo titulo="CUENTA" orden={3}>
         <Fila etiqueta="Cerrar sesión" onPress={cerrarSesion} />
         <Fila etiqueta="Eliminar cuenta" color="danger" onPress={() => setConfirmando(true)} />
       </Grupo>
 
-      <Grupo titulo="AYUDA Y LEGAL" orden={3}>
+      <Grupo titulo="AYUDA Y LEGAL" orden={4}>
         <Fila etiqueta="Ayuda y contacto" flecha onPress={() => router.push('/ayuda')} />
         <Fila etiqueta="Términos y condiciones" flecha onPress={() => verLegal('terminos')} />
         <Fila etiqueta="Política de privacidad" flecha onPress={() => verLegal('privacidad')} />

@@ -1,5 +1,9 @@
 import { borrar, guardar, leer } from '@/lib/almacen';
-import { FORM_INICIAL, type RegistroForm } from '@/features/registro/validacion';
+import {
+  FORM_INICIAL,
+  limpiarDescripcion,
+  type RegistroForm,
+} from '@/features/registro/validacion';
 import { aGuardada, desdeGuardada, type SuscripcionGuardada } from '@/features/suscripcion/datos';
 
 /**
@@ -30,6 +34,11 @@ export type Cuenta = {
   /** Pantalla del registro en la que quedó (empieza en 0). */
   paso: number;
   form: RegistroForm;
+  /**
+   * "Contanos más": qué hace el negocio y quiénes son. Opcional. Los clientes la ven solo si la
+   * despliegan en el perfil del proveedor. Se edita en Ajustes.
+   */
+  descripcion?: string;
   /** Cuándo se envió el registro, en formato ISO. */
   fechaEnvio?: string;
   /** Qué pidió corregir el administrador. Se borra al reenviar el registro. */
@@ -85,6 +94,10 @@ export async function cargarCuenta(): Promise<Cuenta> {
     estado,
     paso,
     form,
+    descripcion:
+      typeof guardada.descripcion === 'string' && guardada.descripcion.trim() !== ''
+        ? limpiarDescripcion(guardada.descripcion)
+        : undefined,
     fechaEnvio: guardada.fechaEnvio,
     motivoRechazo: typeof guardada.motivoRechazo === 'string' ? guardada.motivoRechazo : undefined,
     fechaAprobacion:
