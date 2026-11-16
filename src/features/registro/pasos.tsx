@@ -22,6 +22,8 @@ import { palette, useAppTheme } from '@/theme';
 
 import { CampoDireccion } from './campo-direccion';
 import { CampoPisoDepto } from './campo-piso-depto';
+import { CampoRubroNuevo } from './campo-rubro-nuevo';
+import { MAX_RUBROS_NUEVOS } from './rubros';
 import {
   AJUSTE_INICIAL,
   necesitaAjuste,
@@ -280,18 +282,27 @@ export function PasoDireccion({ form, errores, cambiar, alTerminar }: PasoProps)
 export function PasoRubros({ form, errores, cambiar }: PasoProps) {
   const { spacing } = useAppTheme();
   const cantidad = form.rubros.length;
+  /** Los de la lista y los que propuso este proveedor (esos siguen en revisión). */
+  const catalogo = [...RUBROS, ...form.rubrosNuevos];
 
-  const alternar = (rubro: string) =>
+  const alternar = (rubro: string) => {
+    const quitar = form.rubros.includes(rubro);
     cambiar({
-      rubros: form.rubros.includes(rubro)
-        ? form.rubros.filter((r) => r !== rubro)
-        : [...form.rubros, rubro],
+      rubros: quitar ? form.rubros.filter((r) => r !== rubro) : [...form.rubros, rubro],
+      // Un rubro propuesto que se desmarca se descarta: todavía no es de nadie.
+      ...(quitar && form.rubrosNuevos.includes(rubro)
+        ? { rubrosNuevos: form.rubrosNuevos.filter((r) => r !== rubro) }
+        : {}),
     });
+  };
+
+  const proponer = (rubro: string) =>
+    cambiar({ rubros: [...form.rubros, rubro], rubrosNuevos: [...form.rubrosNuevos, rubro] });
 
   return (
     <View style={{ gap: spacing.lg }}>
       <View style={[styles.wrap, { gap: spacing.sm }]}>
-        {RUBROS.map((rubro) => (
+        {catalogo.map((rubro) => (
           <Chip
             key={rubro}
             label={rubro}
@@ -316,6 +327,22 @@ export function PasoRubros({ form, errores, cambiar }: PasoProps) {
               : `${cantidad} rubros elegidos.`}
         </AppText>
       )}
+
+      {form.rubrosNuevos.length > 0 ? (
+        <AppText variant="footnote" color="textSecondary">
+          En revisión: {form.rubrosNuevos.join(', ')}. Tu perfil ya los usa; los demás proveedores
+          los ven cuando los aprobemos.
+        </AppText>
+      ) : null}
+
+      {form.rubrosNuevos.length < MAX_RUBROS_NUEVOS ? (
+        <CampoRubroNuevo
+          catalogo={catalogo}
+          elegidos={form.rubros}
+          alElegir={(rubro) => cambiar({ rubros: [...form.rubros, rubro] })}
+          alProponer={proponer}
+        />
+      ) : null}
     </View>
   );
 }

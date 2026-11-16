@@ -19,6 +19,8 @@ export type RegistroForm = {
   /** La dirección elegida de la lista de Google, con localidad, provincia y coordenadas. */
   lugar?: Lugar;
   rubros: string[];
+  /** Rubros que propuso este proveedor y todavía no aprobó el administrador. También están en `rubros`. */
+  rubrosNuevos: string[];
   catalogo?: { name: string; size?: number; uri: string };
 };
 
@@ -35,6 +37,7 @@ export const FORM_INICIAL: RegistroForm = {
   piso: '',
   depto: '',
   rubros: [],
+  rubrosNuevos: [],
 };
 
 /** Tamaño máximo del catálogo: 10 MB. */
