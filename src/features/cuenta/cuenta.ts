@@ -4,6 +4,8 @@ import {
   limpiarDescripcion,
   type RegistroForm,
 } from '@/features/registro/validacion';
+import { difusionesGuardadas, type Difusion } from '@/features/avisos/difusiones';
+import { enviadosGuardados, type AvisoEnviado } from '@/features/difusion/difusion';
 import { aGuardada, desdeGuardada, type SuscripcionGuardada } from '@/features/suscripcion/datos';
 
 /**
@@ -49,6 +51,10 @@ export type Cuenta = {
   suscripcion?: SuscripcionGuardada;
   /** Avisos: si los quiere y cuáles ya leyó. Falta hasta que se le pregunta por primera vez. */
   avisos?: PreferenciaAvisos;
+  /** Avisos que les mandó a sus clientes, del más nuevo al más viejo. Con la API, vienen del servidor. */
+  enviados?: AvisoEnviado[];
+  /** Avisos que le mandó el administrador de DistroYa, del más nuevo al más viejo. */
+  difusiones?: Difusion[];
 };
 
 export type PreferenciaAvisos = {
@@ -111,6 +117,8 @@ export async function cargarCuenta(): Promise<Cuenta> {
             leidos: Array.isArray(guardada.avisos.leidos) ? guardada.avisos.leidos : [],
           }
         : undefined,
+    enviados: enviadosGuardados(guardada.enviados),
+    difusiones: difusionesGuardadas(guardada.difusiones),
   };
 }
 

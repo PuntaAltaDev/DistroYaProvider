@@ -27,7 +27,8 @@ export type Aviso = {
   titulo: string;
   texto: string;
   fecha: Date;
-  destino: DestinoAviso;
+  /** Sin destino: es un mensaje de DistroYa y se lee entero en la bandeja. */
+  destino?: DestinoAviso;
 };
 
 /** Los avisos de la bandeja, del más nuevo al más viejo. */
@@ -78,6 +79,16 @@ export function avisosDe(cuenta: Cuenta, ahora = new Date()): Aviso[] {
         destino: 'plan',
       });
     }
+  }
+
+  // Lo que mandó el administrador de DistroYa.
+  for (const difusion of cuenta.difusiones ?? []) {
+    avisos.push({
+      id: `difusion-${difusion.id}`,
+      titulo: difusion.titulo,
+      texto: difusion.texto,
+      fecha: new Date(difusion.fecha),
+    });
   }
 
   return avisos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());

@@ -8,6 +8,7 @@ import {
 } from '@/features/suscripcion/datos';
 
 import { avisosDe, recordatoriosDelPlan, RUTA_AVISOS, sinLeer } from '../avisos';
+import { DIFUSIONES_MAX, difusionesGuardadas, sumarDifusion } from '../difusiones';
 
 const ahora = new Date(2026, 10, 14, 12);
 
@@ -132,5 +133,23 @@ describe('recordatorios del teléfono', () => {
   it('al tocarlos abren la bandeja', () => {
     const recordatorios = recordatoriosDelPlan(licencia(20), ahora);
     expect(recordatorios.every((r) => r.url === RUTA_AVISOS)).toBe(true);
+  });
+});
+
+describe('avisos de DistroYa (difusiones del administrador)', () => {
+  const difusion = { id: 'd1', titulo: 'Novedades', texto: 'Hola.', fecha: ahora.toISOString() };
+
+  it('van a la bandeja, sin destino: se leen ahí', () => {
+    const avisos = avisosDe({ ...aprobada(20), difusiones: [difusion] }, ahora);
+    expect(avisos[0]).toMatchObject({ id: 'difusion-d1', titulo: 'Novedades' });
+    expect(avisos[0].destino).toBeUndefined();
+  });
+
+  it('de lo guardado se descarta lo que tiene otra forma, y no pasan de 30', () => {
+    expect(difusionesGuardadas([difusion, { id: 2 }, { ...difusion, fecha: 'x' }])).toEqual([
+      difusion,
+    ]);
+    const muchas = Array.from({ length: 40 }, (_, i) => ({ ...difusion, id: `d${i}` }));
+    expect(sumarDifusion(difusion, muchas)).toHaveLength(DIFUSIONES_MAX);
   });
 });

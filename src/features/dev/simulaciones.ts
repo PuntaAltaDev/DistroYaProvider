@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
 import { RUTA_AVISOS } from '@/features/avisos/avisos';
+import { sumarDifusion } from '@/features/avisos/difusiones';
 import { useCuenta } from '@/features/cuenta/cuenta-provider';
 import { aGuardada, DIA, DIAS_FREE, licenciaFree, PLAN_FREE } from '@/features/suscripcion/datos';
 import { programarAviso } from '@/lib/notificaciones';
@@ -10,6 +11,12 @@ export type Simulacion = { etiqueta: string; hacer: () => void | Promise<void> }
 
 /** Motivo de prueba para el rechazo. Con la API lo escribe el administrador. */
 const MOTIVO_DE_PRUEBA = 'El logo no se ve bien y falta un teléfono de contacto.';
+
+/** Aviso de prueba del administrador. Con la API lo escribe desde el panel. */
+const DIFUSION_DE_PRUEBA = {
+  titulo: 'Nuevos comercios en tu zona',
+  texto: 'Esta semana se sumaron 40 almacenes en Bahía Blanca. Revisá que tu lista esté al día.',
+};
 
 /** Las simulaciones que tienen sentido según en qué punto está la cuenta. */
 export function useSimulaciones(): Simulacion[] {
@@ -61,6 +68,23 @@ export function useSimulaciones(): Simulacion[] {
       {
         etiqueta: 'Sin licencia (cuenta vieja)',
         hacer: () => actualizar({ suscripcion: undefined }),
+      },
+      {
+        etiqueta: 'Llega un aviso de DistroYa',
+        hacer: () => {
+          const fecha = new Date().toISOString();
+          actualizar((actual) => ({
+            difusiones: sumarDifusion(
+              {
+                id: fecha,
+                titulo: DIFUSION_DE_PRUEBA.titulo,
+                texto: DIFUSION_DE_PRUEBA.texto,
+                fecha,
+              },
+              actual.difusiones,
+            ),
+          }));
+        },
       },
     );
     // En web no hay avisos del teléfono.

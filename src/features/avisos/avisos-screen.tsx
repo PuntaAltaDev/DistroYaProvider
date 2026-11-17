@@ -16,41 +16,93 @@ type AvisosScreenProps = {
   /** Ids de los que no estaban leídos al abrir la bandeja: van marcados con un punto. */
   nuevos: string[];
   alAbrir: (destino: DestinoAviso) => void;
+  /** Abre la pantalla para escribirles a los clientes. */
+  alEnviar: () => void;
+  /** Una línea sobre el último aviso enviado, si mandó alguno. */
+  ultimoEnviado?: string;
   alVolver: () => void;
 };
 
-/** Bandeja de avisos. Al tocar uno, lleva a la pantalla que corresponde. */
-export function AvisosScreen({ avisos, nuevos, alAbrir, alVolver }: AvisosScreenProps) {
+/**
+ * Avisos: arriba, enviar un aviso a los clientes; abajo, la bandeja de entrada (lo que le llega
+ * de DistroYa). Al tocar un aviso de la bandeja, lleva a la pantalla que corresponde.
+ */
+export function AvisosScreen({
+  avisos,
+  nuevos,
+  alAbrir,
+  alEnviar,
+  ultimoEnviado,
+  alVolver,
+}: AvisosScreenProps) {
+  const { colors, spacing } = useAppTheme();
   return (
     <Marco alVolver={alVolver}>
       <Titular lineas={['Tus']} acento="avisos." clave="avisos" />
 
-      {avisos.length === 0 ? (
-        <AppText variant="subhead" color="textSecondary">
-          No tenés avisos.
+      <Animated.View entering={FadeInDown.delay(180).duration(400)}>
+        <Pressable
+          onPress={() => {
+            haptics.tap();
+            alEnviar();
+          }}
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            styles.fila,
+            {
+              gap: spacing.md,
+              paddingVertical: spacing.lg,
+              borderTopWidth: StyleSheet.hairlineWidth,
+              borderColor: colors.border,
+              backgroundColor: pressed ? colors.primarySoft : 'transparent',
+            },
+          ]}>
+          <View style={[styles.flex, { gap: spacing.xxs }]}>
+            <AppText variant="headline">Enviar aviso a clientes</AppText>
+            <AppText variant="subhead" color="textSecondary" numberOfLines={1}>
+              {ultimoEnviado ?? 'Promos y novedades, a su teléfono'}
+            </AppText>
+          </View>
+          <Icon name="forward" size={18} color="primaryText" />
+        </Pressable>
+      </Animated.View>
+
+      <View style={{ gap: spacing.sm }}>
+        <AppText variant="overline" color="textSecondary">
+          BANDEJA DE ENTRADA
         </AppText>
-      ) : (
-        <View>
-          {avisos.map((aviso, i) => (
-            <Animated.View key={aviso.id} entering={FadeInDown.delay(220 + i * 70).duration(400)}>
-              <FilaAviso
-                aviso={aviso}
-                nuevo={nuevos.includes(aviso.id)}
-                primera={i === 0}
-                onPress={() => {
-                  haptics.tap();
-                  alAbrir(aviso.destino);
-                }}
-              />
-            </Animated.View>
-          ))}
-        </View>
-      )}
+        {avisos.length === 0 ? (
+          <AppText variant="subhead" color="textSecondary">
+            No tenés avisos.
+          </AppText>
+        ) : (
+          <View>
+            {avisos.map((aviso, i) => (
+              <Animated.View key={aviso.id} entering={FadeInDown.delay(220 + i * 70).duration(400)}>
+                <FilaAviso
+                  aviso={aviso}
+                  nuevo={nuevos.includes(aviso.id)}
+                  primera={i === 0}
+                  onPress={
+                    aviso.destino
+                      ? () => {
+                          haptics.tap();
+                          if (aviso.destino) alAbrir(aviso.destino);
+                        }
+                      : undefined
+                  }
+                />
+              </Animated.View>
+            ))}
+          </View>
+        )}
+      </View>
     </Marco>
   );
 }
 
-type FilaAvisoProps = { aviso: Aviso; nuevo: boolean; primera: boolean; onPress: () => void };
+/** Sin `onPress`, la fila no se toca ni lleva flecha: es un mensaje para leer ahí. */
+type FilaAvisoProps = { aviso: Aviso; nuevo: boolean; primera: boolean; onPress?: () => void };
 
 function FilaAviso({ aviso, nuevo, primera, onPress }: FilaAvisoProps) {
   const { colors, spacing } = useAppTheme();
@@ -58,7 +110,8 @@ function FilaAviso({ aviso, nuevo, primera, onPress }: FilaAvisoProps) {
   return (
     <Pressable
       onPress={onPress}
-      accessibilityRole="button"
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : 'text'}
       accessibilityLabel={`${nuevo ? 'Nuevo. ' : ''}${aviso.titulo}. ${aviso.texto}`}
       style={({ pressed }) => [
         styles.fila,
@@ -80,7 +133,7 @@ function FilaAviso({ aviso, nuevo, primera, onPress }: FilaAvisoProps) {
           {fechaCorta(aviso.fecha)}
         </AppText>
       </View>
-      <Icon name="forward" size={18} color="textSecondary" />
+      {onPress ? <Icon name="forward" size={18} color="textSecondary" /> : null}
     </Pressable>
   );
 }
