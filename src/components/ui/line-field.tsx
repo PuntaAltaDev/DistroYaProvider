@@ -23,6 +23,10 @@ export type LineFieldRef = RefObject<ComponentRef<typeof TextInput> | null>;
 type LineFieldProps = Omit<TextInputProps, 'style'> & {
   /** Etiqueta chica en mayúsculas, arriba del texto. */
   label: string;
+  /** Sin la etiqueta a la vista (la sigue leyendo el lector de pantalla). */
+  sinEtiqueta?: boolean;
+  /** Letra de 17 en lugar de 22, para pantallas con varios campos de texto (ej.: avisos). */
+  chico?: boolean;
   error?: string;
   helper?: string;
   inputRef?: LineFieldRef;
@@ -34,6 +38,8 @@ type LineFieldProps = Omit<TextInputProps, 'style'> & {
  */
 export function LineField({
   label,
+  sinEtiqueta,
+  chico,
   error,
   helper,
   inputRef: externalRef,
@@ -99,18 +105,20 @@ export function LineField({
         onPress={() => inputRef.current?.focus()}
         accessible={false}
         style={{ gap: spacing.xs }}>
-        <AppText
-          variant="overline"
-          color={error ? 'danger' : focused ? 'primaryText' : 'textSecondary'}
-          style={styles.label}>
-          {label.toUpperCase()}
-        </AppText>
+        {sinEtiqueta ? null : (
+          <AppText
+            variant="overline"
+            color={error ? 'danger' : focused ? 'primaryText' : 'textSecondary'}
+            style={styles.label}>
+            {label.toUpperCase()}
+          </AppText>
+        )}
         <View>
           {/* Copia invisible del texto, solo para medir dónde termina y poner ahí el cursor. */}
           <Text
             aria-hidden
             onLayout={(e) => setAnchoTexto(e.nativeEvent.layout.width)}
-            style={[styles.input, styles.medida]}>
+            style={[styles.input, chico && styles.inputChico, styles.medida]}>
             {valor}
           </Text>
           <TextInput
@@ -130,6 +138,7 @@ export function LineField({
             }}
             style={[
               styles.input,
+              chico && styles.inputChico,
               // Con el campo vacío, el ejemplo arranca después del cursor para que no lo pise.
               { color: colors.text, paddingLeft: focused && !valor ? ANCHO_CURSOR + 6 : 0 },
             ]}
@@ -139,6 +148,7 @@ export function LineField({
               pointerEvents="none"
               style={[
                 styles.cursor,
+                chico && styles.cursorChico,
                 { left: valor ? anchoTexto + 2 : 0, backgroundColor: colors.primary },
                 cursorStyle,
               ]}
@@ -170,6 +180,7 @@ const styles = StyleSheet.create({
   line: { height: 1 },
   medida: { position: 'absolute', opacity: 0, alignSelf: 'flex-start' },
   cursor: { position: 'absolute', top: 8, width: ANCHO_CURSOR, height: 26 },
+  cursorChico: { height: 20 },
   // `outlineStyle` saca el recuadro azul del navegador en la versión web.
   input: {
     fontFamily: fonts.medium,
@@ -179,4 +190,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     outlineStyle: 'none',
   } as object,
+  inputChico: { fontSize: 17, lineHeight: 24 },
 });
